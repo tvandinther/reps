@@ -1,13 +1,19 @@
 // place files you want to import through the `$lib` alias in this folder.
 
-import { exercises } from './state.svelte';
+import { exercises, type Id } from './state.svelte';
 
-export function addExercise(name: string) {
-	const trimmed = name.trim();
-	if (trimmed.length === 0) return;
+export type AddExerciseParameters = {
+	name: string;
+	description: string;
+};
+
+export function addExercise(parameters: AddExerciseParameters): Id | null {
+	const trimmed = parameters.name.trim();
+	if (trimmed.length === 0) return null;
 
 	const id = crypto.randomUUID();
-	exercises[id] = { id: id, name: trimmed };
+	exercises[id] = { id: id, name: trimmed, description: parameters.description.trim() };
+	return id;
 }
 
 export function search(values: any[], searchString: string): any[];

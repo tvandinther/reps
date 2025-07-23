@@ -1,5 +1,7 @@
 <script lang="ts">
+	import { goto } from "$app/navigation";
 	import { addExercise, search } from "$lib";
+	import ExerciseItem from "$lib/components/ExerciseItem.svelte";
 	import { exercises } from "$lib/state.svelte";
 
     let searchValue = $state("")
@@ -7,23 +9,19 @@
 
     $inspect(filteredExercises)
 </script>
-<h1>Reps</h1>
-<form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+<form class="bg-white shadow-md rounded px-8 pt-4 pb-1 mb-4">
     <div class="flex items-center justify-between">
         <button 
             class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
             type="button"
-            onclick={() => addExercise(searchValue)}
+            onclick={() => goto(`/exercise?name=${searchValue}`)}
         >
         Add {searchValue.length === 0 ? "Exercise" : searchValue}
       </button>
     </div>
     <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="exercise-name">
-            Exercise Name
-        </label>
         <input 
-            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+            class="shadow mt-2 appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
             id="exercise-name" 
             type="text" 
             placeholder="Exercise Name"
@@ -31,8 +29,9 @@
         >
     </div>
 </form>
-<div>
+<hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700">
+<div class="flex flex-col gap-2">
     {#each filteredExercises as exercise }
-        <h3>{exercise.name}</h3>
+        <ExerciseItem {exercise} />
     {/each}
 </div>

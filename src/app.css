@@ -1,6 +1,14 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 
+body {
+    @apply dark:bg-gray-900;
+}
+
 button {
-    cursor: pointer;
+    @apply cursor-pointer
+}
+
+button:disabled {
+    @apply cursor-not-allowed;
 }
