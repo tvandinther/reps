@@ -6,7 +6,9 @@ export function search<T>(
 	getter?: (x: T) => string
 ): T[] | any[] {
 	const actualGetter: (x: T) => string = getter || ((x: any) => String(x));
-	const results = values.filter((item) => actualGetter(item).includes(searchString));
+	const results = values.filter((item) =>
+		actualGetter(item).toLocaleLowerCase().includes(searchString.toLocaleLowerCase())
+	);
 
 	return results as T[] | any[];
 }
