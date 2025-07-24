@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
-	import { addExercise, search } from "$lib";
+	import { search } from "$lib";
 	import ExerciseItem from "$lib/components/ExerciseItem.svelte";
 	import { exercises } from "$lib/state.svelte";
 
     let searchValue = $state("")
-    let filteredExercises = $derived(search(Object.values(exercises), searchValue, x => x.name))
+    let filteredExercises = $derived(search(Object.values(exercises), searchValue, x => x.name)) 
 
     $inspect(filteredExercises)
 </script>

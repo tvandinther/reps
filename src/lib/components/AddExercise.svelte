@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto, pushState } from "$app/navigation";
 	import { addExercise } from "$lib";
+	import { exercises } from "$lib/state.svelte";
 
     const { name = "" }: {name?: string} = $props()
 
@@ -44,7 +45,7 @@
             " 
             type="button"
             onclick={() => {
-                const id = addExercise(exerciseData)
+                const id = addExercise(exercises, exerciseData)
                 if (id === null) goto("/")
                 else goto("/exercise/" + id)
             }}

@@ -1,13 +1,13 @@
 // place files you want to import through the `$lib` alias in this folder.
 
-import { exercises, type Id } from './state.svelte';
+import { type Exercises, type Id } from './state.svelte';
 
 export type AddExerciseParameters = {
 	name: string;
 	description: string;
 };
 
-export function addExercise(parameters: AddExerciseParameters): Id | null {
+export function addExercise(exercises: Exercises, parameters: AddExerciseParameters): Id | null {
 	const trimmed = parameters.name.trim();
 	if (trimmed.length === 0) return null;
 
