@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Exercise } from "$lib/state.svelte";
+	import type { Exercise } from "$lib/exercise";
 
     const { exercise }: {exercise: Exercise} = $props()
 </script>

@@ -11,12 +11,11 @@
 </script>
 <form class="bg-white shadow-md rounded px-8 pt-4 pb-1 mb-4">
     <div class="flex items-center justify-between">
-        <button 
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
+        <button
             type="button"
             onclick={() => goto(`/exercise?name=${searchValue}`)}
         >
-        Add {searchValue.length === 0 ? "Exercise" : searchValue}
+            Add {searchValue.length === 0 ? "Exercise" : searchValue}
       </button>
     </div>
     <div class="mb-4">

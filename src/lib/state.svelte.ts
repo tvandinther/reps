@@ -1,20 +1,6 @@
 import { browser } from '$app/environment';
-import { getContext, setContext } from 'svelte';
 import * as v from 'valibot';
-
-const Id = v.pipe(v.string(), v.uuid('The UUID is badly formatted.'));
-
-const Exercise = v.object({
-	id: Id,
-	name: v.string(),
-	description: v.string()
-});
-
-const Exercises = v.record(v.string(), Exercise);
-
-export type Id = v.InferInput<typeof Id>;
-export type Exercise = v.InferInput<typeof Exercise>;
-export type Exercises = v.InferInput<typeof Exercises>;
+import { Exercises } from './exercise';
 
 const STATE_STORAGE_KEY = 'STATE_SAVE';
 

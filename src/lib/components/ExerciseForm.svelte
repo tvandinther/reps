@@ -1,14 +1,8 @@
 <script lang="ts">
-	import { goto, pushState } from "$app/navigation";
-	import { addExercise } from "$lib";
-	import { exercises } from "$lib/state.svelte";
+	import { goto } from "$app/navigation";
+	import { persistExercise, type Exercise } from "$lib/exercise";
 
-    const { name = "" }: {name?: string} = $props()
-
-    let exerciseData = $state({
-        name: name,
-        description: "",
-    })
+    const { exercise = $bindable(), isNew = false }: {exercise: Exercise, isNew?: boolean} = $props()
 </script>
 
 <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
@@ -21,20 +15,19 @@
             id="exercise-name" 
             type="text" 
             placeholder="Exercise Name"
-            bind:value={exerciseData.name}
+            bind:value={exercise.name}
         >
     </div>
     <div class="mb-4">
         <label class="block text-gray-700 text-sm font-bold mb-2" for="exercise-name">
             Description
         </label>
-        <input 
+        <textarea 
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
             id="exercise-name" 
-            type="text" 
             placeholder="Description"
-            bind:value={exerciseData.description}
-        >
+            bind:value={exercise.description}
+        ></textarea>
     </div>
     <div class="flex items-center justify-between">
         <button 
@@ -45,13 +38,12 @@
             " 
             type="button"
             onclick={() => {
-                const id = addExercise(exercises, exerciseData)
-                if (id === null) goto("/")
-                else goto("/exercise/" + id)
+                persistExercise(exercise)
+                goto("/exercise/" + exercise.id)
             }}
-            disabled={exerciseData.name.trim().length === 0}
+            disabled={exercise.name.trim().length === 0}
         >
-        Add {exerciseData.name}
+        {isNew ? "Add" : "Save"} {exercise.name}
       </button>
     </div>
 </form>
