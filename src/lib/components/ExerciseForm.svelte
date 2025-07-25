@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
 	import { persistExercise, type Exercise } from "$lib/exercise";
+	import { root } from "$lib/routes";
 
     const { exercise = $bindable(), isNew = false }: {exercise: Exercise, isNew?: boolean} = $props()
 </script>
@@ -39,7 +40,7 @@
             type="button"
             onclick={() => {
                 persistExercise(exercise)
-                goto("/exercise/" + exercise.id)
+                root.exercises.id(exercise.id).go()
             }}
             disabled={exercise.name.trim().length === 0}
         >

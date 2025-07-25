@@ -2,6 +2,7 @@
 	import { goto } from "$app/navigation";
 	import { search } from "$lib";
 	import ExerciseItem from "$lib/components/ExerciseItem.svelte";
+	import { root } from "$lib/routes";
 	import { exercises } from "$lib/state.svelte";
 
     let searchValue = $state("")
@@ -13,7 +14,7 @@
     <div class="flex items-center justify-between">
         <button
             type="button"
-            onclick={() => goto(`/exercise?name=${searchValue}`)}
+            onclick={() => root.exercises.go(searchValue)}
         >
             Add {searchValue.length === 0 ? "Exercise" : searchValue}
       </button>

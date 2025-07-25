@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
 	import { deleteExercise } from "$lib/exercise";
+	import { root } from "$lib/routes";
 import type { PageProps } from "./$types";
 
     const { data }: PageProps = $props()
@@ -15,7 +16,7 @@ import type { PageProps } from "./$types";
     <div class="flex justify-between">
         <button 
             class="mt-2"
-            onclick={() => goto(`./${exercise.id}/edit`)}
+            onclick={() => root.exercises.id(exercise.id).edit.go()}
         >
             Edit
         </button>
@@ -23,7 +24,7 @@ import type { PageProps } from "./$types";
             class="mt-2 delete"
             onclick={() => {
                 deleteExercise(exercise)
-                goto(`/`)
+                root.go();
             }}
         >
             Delete
