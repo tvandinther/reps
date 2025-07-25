@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
 	import { search } from "$lib";
 	import ExerciseItem from "$lib/components/ExerciseItem.svelte";
 	import { root } from "$lib/routes";
@@ -7,8 +6,6 @@
 
     let searchValue = $state("")
     let filteredExercises = $derived(search(Object.values(exercises), searchValue, x => x.name)) 
-
-    $inspect(filteredExercises)
 </script>
 <form class="bg-white shadow-md rounded px-8 pt-4 pb-1 mb-4">
     <div class="flex items-center justify-between">

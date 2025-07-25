@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { ExerciseNote, persistExerciseNote } from "$lib/exercise";
+	import { ExerciseNote, newExerciseNote } from "$lib/exercise";
 
-    const { exerciseNote = $bindable(), confirm, isNew = false }: { exerciseNote: ExerciseNote, confirm: () => void, isNew?: boolean} = $props()
+    const { confirm, isNew = false }: { confirm: (exerciseNote: ExerciseNote) => void, isNew?: boolean} = $props()
+    const exerciseNote = $state(newExerciseNote())
 </script>
 
 <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
@@ -25,7 +26,7 @@
             disabled:bg-gray-400
             " 
             type="button"
-            onclick={confirm}
+            onclick={() => confirm(exerciseNote)}
             disabled={exerciseNote.content.trim().length === 0}
         >
         {isNew ? "Add" : "Save"} Note

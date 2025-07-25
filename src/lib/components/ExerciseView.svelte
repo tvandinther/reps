@@ -1,14 +1,18 @@
 <script lang="ts">
 	import ExerciseEvents from "$lib/components/ExerciseEvents.svelte";
 	import ExerciseNoteForm from "$lib/components/ExerciseNoteForm.svelte";
-	import { deleteExercise, Exercise, newExerciseNote, persistExerciseNote } from "$lib/exercise";
+	import { deleteExercise, Exercise, ExerciseNote, ExerciseSet, newExerciseNote, newExerciseSet, persistExerciseEvent } from "$lib/exercise";
 	import { root } from "$lib/routes";
+	import ExerciseSetForm from "./ExerciseSetForm.svelte";
 
     const { exercise }: {exercise: Exercise} = $props()
     const events = $derived(Object.values(exercise.events))
 
     let showExerciseNoteForm = $state(false)
-    let exerciseNote = $state(newExerciseNote())
+    let exerciseNote: ExerciseNote | undefined = $state()
+
+    let showExerciseSetForm = $state(false)
+    let exerciseSet: ExerciseSet | undefined = $state()
 </script>
 
 <div class="bg-white shadow-md rounded px-8 pt-2 pb-4 mb-4">
@@ -35,18 +39,25 @@
 </div>
 <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700">
 <div class="bg-white shadow-md rounded px-8 pt-2 pb-4 mb-4">
-    <button>
+    <button onclick={() => showExerciseSetForm = true}>
         Log Set
     </button>
     <button onclick={() => showExerciseNoteForm = true}>
         Add Note
     </button>
     {#if showExerciseNoteForm}
-        <ExerciseNoteForm bind:exerciseNote={exerciseNote} 
-            confirm={() => {
-                persistExerciseNote(exercise, exerciseNote)
+        <ExerciseNoteForm 
+            confirm={(exerciseNote) => {
+                persistExerciseEvent(exercise, exerciseNote)
                 showExerciseNoteForm = false
-                exerciseNote = newExerciseNote()
+            }}
+        />
+    {/if}
+    {#if showExerciseSetForm}
+        <ExerciseSetForm 
+            confirm={(exerciseSet) => {
+                persistExerciseEvent(exercise, exerciseSet)
+                showExerciseSetForm = false
             }}
         />
     {/if}

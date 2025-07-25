@@ -19,9 +19,9 @@
         {/if}
         {#if isExerciseSet(event)}
             <div class="border rounded">
-                <!-- <span class="text-sm text-gray-500">{new Date(event.createdAt).toLocaleString()}</span>
+                <span class="text-sm text-gray-500">{new Date(event.createdAt).toLocaleString()}</span>
                 <br>
-                <span>{event.content}</span> -->
+                <span>{event.resistance}</span> / <span>{event.reps}</span> <span>{event.repsUnit}</span> / <span>{event.exertionRating}</span>
             </div>
         {/if}
         {/each}

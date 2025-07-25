@@ -7,12 +7,16 @@ export const ExerciseNote = v.object({
 	type: v.literal('note'),
 	id: Id,
 	createdAt: IsoTimestamp,
-	content: v.fallback(v.string(), '')
+	content: v.fallback(v.string(), ''),
 });
 export const ExerciseSet = v.object({
 	type: v.literal('set'),
 	id: Id,
-	createdAt: IsoTimestamp
+	createdAt: IsoTimestamp,
+	resistance: v.number(),
+	reps: v.number(),
+	repsUnit: v.literal('reps'),
+	exertionRating: v.number(),
 });
 export const ExerciseEvent = v.variant('type', [ExerciseNote, ExerciseSet]);
 
@@ -20,7 +24,7 @@ export const Exercise = v.object({
 	id: Id,
 	name: v.string(),
 	description: v.fallback(v.string(), ''),
-	events: v.fallback(v.record(Id, ExerciseEvent), {})
+	events: v.fallback(v.record(Id, ExerciseEvent), {}),
 });
 
 export const Exercises = v.record(Id, Exercise);
@@ -48,16 +52,32 @@ export function newExerciseNote({ content }: NewNoteParameters = {}): ExerciseNo
 		type: 'note',
 		id: crypto.randomUUID(),
 		createdAt: new Date().toISOString(),
-		content: content ?? ''
+		content: content ?? '',
 	};
 }
 
-export function persistExerciseNote(exercise: Exercise, exerciseNote: ExerciseNote): void {
-	exercises[exercise.id].events[exerciseNote.id] = exerciseNote;
+export type NewSetParameters = {
+	resistance?: number;
+	repsUnit: ExerciseSet['repsUnit'];
+};
+export function newExerciseSet({ resistance, repsUnit }: NewSetParameters): ExerciseSet {
+	return {
+		type: 'set',
+		id: crypto.randomUUID(),
+		createdAt: new Date().toISOString(),
+		resistance: resistance ?? 0,
+		reps: 0,
+		exertionRating: 0,
+		repsUnit: repsUnit,
+	};
 }
 
-export function deleteExerciseNote(exercise: Exercise, exerciseNote: ExerciseNote): void {
-	delete exercise.events[exerciseNote.id];
+export function persistExerciseEvent(exercise: Exercise, exerciseEvent: ExerciseEvent): void {
+	exercises[exercise.id].events[exerciseEvent.id] = exerciseEvent;
+}
+
+export function deleteExerciseEvent(exercise: Exercise, exerciseEvent: ExerciseEvent): void {
+	delete exercise.events[exerciseEvent.id];
 }
 
 export type NewExerciseParameters = {
@@ -70,7 +90,7 @@ export function newExercise({ name, description }: NewExerciseParameters = {}): 
 		id: crypto.randomUUID(),
 		name: name ?? '',
 		description: description ?? '',
-		events: {}
+		events: {},
 	};
 }
 
