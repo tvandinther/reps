@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
 	import { persistExercise, type Exercise } from "$lib/exercise";
 	import { root } from "$lib/routes";
 
@@ -27,6 +26,7 @@
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
             id="exercise-name" 
             placeholder="Description"
+            rows="8"
             bind:value={exercise.description}
         ></textarea>
     </div>

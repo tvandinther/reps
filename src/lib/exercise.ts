@@ -9,13 +9,14 @@ export const ExerciseNote = v.object({
 	createdAt: IsoTimestamp,
 	content: v.fallback(v.string(), ''),
 });
+export const ExerciseRepsUnit = v.literal('reps');
 export const ExerciseSet = v.object({
 	type: v.literal('set'),
 	id: Id,
 	createdAt: IsoTimestamp,
 	resistance: v.number(),
 	reps: v.number(),
-	repsUnit: v.literal('reps'),
+	repsUnit: ExerciseRepsUnit,
 	exertionRating: v.number(),
 });
 export const ExerciseEvent = v.variant('type', [ExerciseNote, ExerciseSet]);
@@ -25,6 +26,7 @@ export const Exercise = v.object({
 	name: v.string(),
 	description: v.fallback(v.string(), ''),
 	events: v.fallback(v.record(Id, ExerciseEvent), {}),
+	repsUnit: v.fallback(ExerciseRepsUnit, 'reps'),
 });
 
 export const Exercises = v.record(Id, Exercise);
@@ -91,6 +93,7 @@ export function newExercise({ name, description }: NewExerciseParameters = {}): 
 		name: name ?? '',
 		description: description ?? '',
 		events: {},
+		repsUnit: 'reps',
 	};
 }
 

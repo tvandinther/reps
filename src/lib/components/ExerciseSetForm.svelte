@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { newExerciseSet, type ExerciseSet } from "$lib/exercise";
 
-    const { confirm, isNew = false }: { confirm: (exerciseSet: ExerciseSet) => void, isNew?: boolean} = $props()
-    const exerciseSet = $state(newExerciseSet({repsUnit: 'reps'}))
+    const { repsUnit, confirm, isNew = false }: { repsUnit: ExerciseSet["repsUnit"], confirm: (exerciseSet: ExerciseSet) => void, isNew?: boolean} = $props()
+    const exerciseSet = $state(newExerciseSet({repsUnit: repsUnit}))
 </script>
 
 <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">

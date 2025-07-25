@@ -55,6 +55,7 @@
     {/if}
     {#if showExerciseSetForm}
         <ExerciseSetForm 
+            repsUnit={exercise.repsUnit}
             confirm={(exerciseSet) => {
                 persistExerciseEvent(exercise, exerciseSet)
                 showExerciseSetForm = false
