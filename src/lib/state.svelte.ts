@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
 import * as v from 'valibot';
-import { Exercises } from './exercise';
+import { Exercise, Exercises, Id } from './exercise';
 
 const STATE_STORAGE_KEY = 'STATE_SAVE';
 
@@ -16,9 +16,13 @@ export function load(): Exercises | null {
 		const savedState = JSON.parse(saved);
 		const result = v.safeParse(Exercises, savedState);
 		if (!result.success) {
-			console.error('Could not parse saved game state', v.flatten<typeof Exercises>(result.issues));
+			console.warn(
+				'Could not fully parse saved game state',
+				v.flatten<typeof Exercises>(result.issues)
+			);
+			console.log(result);
 
-			return null;
+			return Object.assign(initialExercises, result.output);
 		}
 
 		return result.output;
@@ -34,11 +38,13 @@ export type State = {
 	exercises: Exercises;
 };
 
+const initialExercises: Exercises = {};
+
 export const exercises: Exercises = $state(
 	(() => {
-		if (!browser) return {};
+		if (!browser) return initialExercises;
 
 		const saved = load();
-		return saved !== null ? saved : {};
+		return saved !== null ? saved : initialExercises;
 	})()
 );

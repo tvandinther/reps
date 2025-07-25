@@ -7,6 +7,7 @@
 	
 	$effect(() => {
 		console.log("Saving exercises")
+		$inspect(exercises)
 		save(exercises)
 	})
 </script>
