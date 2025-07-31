@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ExerciseEvents from "$lib/components/ExerciseEvents.svelte";
 	import ExerciseNoteForm from "$lib/components/ExerciseNoteForm.svelte";
-	import { deleteExercise, Exercise, ExerciseNote, ExerciseSet, newExerciseNote, newExerciseSet, persistExerciseEvent } from "$lib/exercise";
+	import { deleteExercise, Exercise, ExerciseNote, ExerciseSet, getExerciseRepsUnitFromType, newExerciseNote, newExerciseSet, persistExerciseEvent } from "$lib/exercise";
 	import { root } from "$lib/routes";
 	import ExerciseSetForm from "./ExerciseSetForm.svelte";
 
@@ -55,7 +55,7 @@
     {/if}
     {#if showExerciseSetForm}
         <ExerciseSetForm 
-            repsUnit={exercise.repsUnit}
+            repsUnit={getExerciseRepsUnitFromType(exercise.repsUnit)}
             confirm={(exerciseSet) => {
                 persistExerciseEvent(exercise, exerciseSet)
                 showExerciseSetForm = false

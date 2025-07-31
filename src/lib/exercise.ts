@@ -9,14 +9,50 @@ export const ExerciseNote = v.object({
 	createdAt: IsoTimestamp,
 	content: v.fallback(v.string(), ''),
 });
-export const ExerciseRepsUnit = v.literal('reps');
+
+export const ExerciseRepsUnit = v.object({
+	type: v.string(),
+	displayName: v.string(),
+	shortName: v.string(),
+});
+export type ExerciseRepsUnit = v.InferInput<typeof ExerciseRepsUnit>;
+
+export const ExerciseRepsUnits: ExerciseRepsUnit[] = [
+	{
+		type: 'reps',
+		displayName: 'Reps',
+		shortName: 'reps',
+	},
+	{
+		type: 'seconds',
+		displayName: 'Seconds',
+		shortName: 's',
+	},
+] as const;
+
+const exerciseRepsUnitMap: Record<ExerciseRepsUnit['type'], ExerciseRepsUnit> =
+	ExerciseRepsUnits.reduce(
+		(acc, x) =>
+			Object.assign(acc, {
+				[x.type]: x,
+			}),
+		{}
+	);
+
+export function getExerciseRepsUnitFromType(type: ExerciseRepsUnit['type']): ExerciseRepsUnit {
+	return exerciseRepsUnitMap[type];
+}
+// export const ExerciseRepsUnitsSchema = v.variant('type');
+// export type ExerciseRepsUnits = v.InferInput<typeof ExerciseRepsUnitsSchema>;
+export const ExerciseRepsUnitType = v.union(ExerciseRepsUnits.map((x) => v.literal(x.type)));
+
 export const ExerciseSet = v.object({
 	type: v.literal('set'),
 	id: Id,
 	createdAt: IsoTimestamp,
 	resistance: v.number(),
 	reps: v.number(),
-	repsUnit: ExerciseRepsUnit,
+	repsUnitType: ExerciseRepsUnitType,
 	exertionRating: v.number(),
 });
 export const ExerciseEvent = v.variant('type', [ExerciseNote, ExerciseSet]);
@@ -26,7 +62,7 @@ export const Exercise = v.object({
 	name: v.string(),
 	description: v.fallback(v.string(), ''),
 	events: v.fallback(v.record(Id, ExerciseEvent), {}),
-	repsUnit: v.fallback(ExerciseRepsUnit, 'reps'),
+	repsUnit: v.fallback(ExerciseRepsUnitType, 'reps'),
 });
 
 export const Exercises = v.record(Id, Exercise);
@@ -60,17 +96,17 @@ export function newExerciseNote({ content }: NewNoteParameters = {}): ExerciseNo
 
 export type NewSetParameters = {
 	resistance?: number;
-	repsUnit: ExerciseSet['repsUnit'];
+	repsUnitType: ExerciseSet['repsUnitType'];
 };
-export function newExerciseSet({ resistance, repsUnit }: NewSetParameters): ExerciseSet {
+export function newExerciseSet({ resistance, repsUnitType }: NewSetParameters): ExerciseSet {
 	return {
 		type: 'set',
 		id: crypto.randomUUID(),
 		createdAt: new Date().toISOString(),
 		resistance: resistance ?? 0,
 		reps: 0,
-		exertionRating: 0,
-		repsUnit: repsUnit,
+		exertionRating: 1,
+		repsUnitType: repsUnitType,
 	};
 }
 

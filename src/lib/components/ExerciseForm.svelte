@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { persistExercise, type Exercise } from "$lib/exercise";
+	import { ExerciseRepsUnits, persistExercise, type Exercise } from "$lib/exercise";
 	import { root } from "$lib/routes";
 
     const { exercise = $bindable(), isNew = false }: {exercise: Exercise, isNew?: boolean} = $props()
@@ -29,6 +29,21 @@
             rows="8"
             bind:value={exercise.description}
         ></textarea>
+    </div>
+    <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="exercise-reps-unit">
+            Reps Unit
+        </label>
+        <select 
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+            id="exercise-reps-unit" 
+            placeholder="Description"
+            bind:value={exercise.repsUnit}
+        >
+            {#each ExerciseRepsUnits as unit (unit.type)}
+                <option value={unit.type}>{unit.displayName}</option>
+            {/each}
+        </select>
     </div>
     <div class="flex items-center justify-between">
         <button 

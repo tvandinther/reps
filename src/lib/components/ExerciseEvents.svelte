@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { isExerciseNote, isExerciseSet, type ExerciseEvent } from "$lib/exercise";
+	import { getExerciseRepsUnitFromType, isExerciseNote, isExerciseSet, type ExerciseEvent } from "$lib/exercise";
 
     const {events}: {events: ExerciseEvent[]} = $props()
     const reversed = true;
@@ -21,7 +21,7 @@
             <div class="border rounded">
                 <span class="text-sm text-gray-500">{new Date(event.createdAt).toLocaleString()}</span>
                 <br>
-                <span>{event.resistance}</span> / <span>{event.reps}</span> <span>{event.repsUnit}</span> / <span>{event.exertionRating}</span>
+                <span>{event.resistance}</span> / <span>{event.reps}</span> <span>{getExerciseRepsUnitFromType(event.repsUnitType).shortName}</span> / <span>{event.exertionRating}</span>
             </div>
         {/if}
         {/each}

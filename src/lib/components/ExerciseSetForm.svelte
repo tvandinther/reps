@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { newExerciseSet, type ExerciseSet } from "$lib/exercise";
+	import { ExerciseRepsUnit, newExerciseSet, type ExerciseSet } from "$lib/exercise";
 
-    const { repsUnit, confirm, isNew = false }: { repsUnit: ExerciseSet["repsUnit"], confirm: (exerciseSet: ExerciseSet) => void, isNew?: boolean} = $props()
-    const exerciseSet = $state(newExerciseSet({repsUnit: repsUnit}))
+    const { repsUnit, confirm, isNew = false }: { repsUnit: ExerciseRepsUnit, confirm: (exerciseSet: ExerciseSet) => void, isNew?: boolean} = $props()
+    const exerciseSet = $state(newExerciseSet({repsUnitType: repsUnit.type}))
 </script>
 
 <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
@@ -14,6 +14,7 @@
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
             id="resistance" 
             type="number" 
+            min="0"
             placeholder="Resistance"
             bind:value={exerciseSet.resistance}
             onfocus={(e) => e.currentTarget.select()}
@@ -21,12 +22,13 @@
     </div>
     <div class="mb-4">
         <label class="block text-gray-700 text-sm font-bold mb-2" for="reps">
-            Reps
+            {repsUnit.displayName}
         </label>
         <input 
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
             id="reps" 
-            type="number" 
+            type="number"
+            min="0"
             placeholder="Reps"
             bind:value={exerciseSet.reps}
             onfocus={(e) => e.currentTarget.select()}
