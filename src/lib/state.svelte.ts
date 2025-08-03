@@ -1,6 +1,5 @@
 import { browser } from '$app/environment';
 import * as v from 'valibot';
-import {} from './exercise';
 import { Exercises } from './schema';
 
 const STATE_STORAGE_KEY = 'STATE_SAVE';

@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { persistExercise } from "$lib/exercise";
+	import { persistExercise } from "$lib/actions";
 	import { root } from "$lib/routes";
-	import { Exercise, ExerciseRepsUnits } from "$lib/schema";
+	import { Exercise } from "$lib/schema";
+	import { ExerciseRepsUnits } from "$lib/schema/exercise/reps";
 
     const { exercise = $bindable(), isNew = false }: {exercise: Exercise, isNew?: boolean} = $props()
 </script>

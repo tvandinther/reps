@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import {exercises, load, save } from '$lib/state.svelte';
+	import {exercises, save } from '$lib/state.svelte';
 	import '../app.css';
 
 	let { children } = $props();

@@ -1,6 +1,7 @@
 <script lang="ts">
+	import { newExercise } from "$lib/actions";
 	import ExerciseForm from "$lib/components/ExerciseForm.svelte";
-	import { newExercise, type Exercise } from "$lib/exercise";
+	import { Exercise } from "$lib/schema";
 	import type { PageProps } from "./$types";
 
 	const { data }: PageProps = $props()

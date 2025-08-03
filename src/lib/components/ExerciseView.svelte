@@ -1,19 +1,17 @@
 <script lang="ts">
 	import ExerciseEvents from "$lib/components/ExerciseEvents.svelte";
 	import ExerciseNoteForm from "$lib/components/ExerciseNoteForm.svelte";
-	import { deleteExercise, persistExerciseEvent } from "$lib/exercise";
+	import { getExerciseRepsUnitFromType, persistExerciseEvent, deleteExercise } from "$lib/actions";
 	import { root } from "$lib/routes";
-	import { Exercise, ExerciseNote, ExerciseSet, getExerciseRepsUnitFromType } from "$lib/schema";
 	import ExerciseSetForm from "./ExerciseSetForm.svelte";
+	import { Exercise } from "$lib/schema";
 
     const { exercise }: {exercise: Exercise} = $props()
     const events = $derived(Object.values(exercise.events))
 
     let showExerciseNoteForm = $state(false)
-    let exerciseNote: ExerciseNote | undefined = $state()
 
     let showExerciseSetForm = $state(false)
-    let exerciseSet: ExerciseSet | undefined = $state()
 </script>
 
 <div class="bg-white shadow-md rounded px-8 pt-2 pb-4 mb-4">

@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { isExerciseNote, isExerciseSet } from "$lib/exercise";
-	import { ExerciseEvent, getExerciseRepsUnitFromType } from "$lib/schema";
+	import { getExerciseRepsUnitFromType } from '$lib/actions';
+	import { ExerciseEvent, ExerciseNote, ExerciseSet } from '$lib/schema';
+    import { is } from 'valibot'
 
     const {events}: {events: ExerciseEvent[]} = $props()
     const reversed = true;
@@ -11,14 +12,14 @@
 </script>
 
 {#each sortedEvents as event, i (i)}
-        {#if isExerciseNote(event)}
+        {#if is(ExerciseNote, event)}
             <div class="border rounded">
                 <span class="text-sm text-gray-500">{new Date(event.createdAt).toLocaleString()}</span>
                 <br>
                 <span>{event.content}</span>
             </div>
         {/if}
-        {#if isExerciseSet(event)}
+        {#if is(ExerciseSet, event)}
             <div class="border rounded">
                 <span class="text-sm text-gray-500">{new Date(event.createdAt).toLocaleString()}</span>
                 <br>
