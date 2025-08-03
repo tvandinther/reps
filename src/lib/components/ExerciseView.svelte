@@ -1,8 +1,9 @@
 <script lang="ts">
 	import ExerciseEvents from "$lib/components/ExerciseEvents.svelte";
 	import ExerciseNoteForm from "$lib/components/ExerciseNoteForm.svelte";
-	import { deleteExercise, Exercise, ExerciseNote, ExerciseSet, getExerciseRepsUnitFromType, newExerciseNote, newExerciseSet, persistExerciseEvent } from "$lib/exercise";
+	import { deleteExercise, persistExerciseEvent } from "$lib/exercise";
 	import { root } from "$lib/routes";
+	import { Exercise, ExerciseNote, ExerciseSet, getExerciseRepsUnitFromType } from "$lib/schema";
 	import ExerciseSetForm from "./ExerciseSetForm.svelte";
 
     const { exercise }: {exercise: Exercise} = $props()

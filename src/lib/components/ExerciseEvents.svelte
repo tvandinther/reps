@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { getExerciseRepsUnitFromType, isExerciseNote, isExerciseSet, type ExerciseEvent } from "$lib/exercise";
+	import { isExerciseNote, isExerciseSet } from "$lib/exercise";
+	import { ExerciseEvent, getExerciseRepsUnitFromType } from "$lib/schema";
 
     const {events}: {events: ExerciseEvent[]} = $props()
     const reversed = true;

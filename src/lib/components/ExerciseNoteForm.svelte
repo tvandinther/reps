@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { ExerciseNote, newExerciseNote } from "$lib/exercise";
+	import { newExerciseNote } from "$lib/exercise";
+	import { ExerciseNote } from "$lib/schema";
 
     const { confirm, isNew = false }: { confirm: (exerciseNote: ExerciseNote) => void, isNew?: boolean} = $props()
     const exerciseNote = $state(newExerciseNote())

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { Exercise } from "$lib/exercise";
 	import routes from "$lib/routes";
+	import { Exercise } from "$lib/schema";
 
     const { exercise }: {exercise: Exercise} = $props()
 </script>

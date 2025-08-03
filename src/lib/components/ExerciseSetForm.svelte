@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { ExerciseRepsUnit, newExerciseSet, type ExerciseSet } from "$lib/exercise";
+	import { newExerciseSet } from "$lib/exercise";
+	import { ExerciseRepsUnit, ExerciseSet } from "$lib/schema";
 
     const { repsUnit, confirm, isNew = false }: { repsUnit: ExerciseRepsUnit, confirm: (exerciseSet: ExerciseSet) => void, isNew?: boolean} = $props()
     const exerciseSet = $state(newExerciseSet({repsUnitType: repsUnit.type}))
