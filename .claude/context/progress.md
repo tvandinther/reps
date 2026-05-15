@@ -4,7 +4,7 @@ Current state of the build. Update at the end of every session.
 
 ---
 
-## Status: Pre-build — design and architecture phase
+## Status: Full MVP scaffolded — awaiting first build on Android machine
 
 ---
 
@@ -19,20 +19,23 @@ Current state of the build. Update at the end of every session.
 - [x] MVP scope locked
 - [x] `CLAUDE.md` and project memory structure established
 - [x] Design exploration in progress — directions 3 and 4 under consideration
+- [x] **Phase 1:** Project scaffold — Gradle Kotlin DSL, devbox.json (JDK17 + Gradle), all dependencies
+- [x] **Phase 2:** Database layer — Room entities (units/exercises/sets), UnitDao, ExerciseDao, SetDao, unit seeding, SessionAssembler, unit tests
+- [x] **Phase 3:** Exercises screen — fuzzy search, Add sheet with unit pickers, last-set summary rows
+- [x] **Phase 4:** Set logging screen — current session, ghost sets, swipe-to-delete, Add Set bottom sheet, RPE, auto-save
+- [x] **Phase 5:** History screen — session assembly from LAG() query, collapsible sessions
+- [x] **Phase 6:** Koin wiring, dark theme, navigation, StateFlow throughout
 
 ## In Progress
 
-- [ ] Design direction — choosing between Direction 3 (Soviet Sports Science) and Direction 4 (Editorial/Typographic), or a hybrid
-- [ ] Design system document — typeface, color tokens, spacing, component primitives
+- [ ] First build on Android machine (project not yet built/tested)
+- [ ] Design direction — choosing between Direction 3 and Direction 4
 
 ## Up Next
 
-- [ ] Project scaffold — Gradle setup, package structure, dependency declarations
-- [ ] Room schema — entities, DAOs, database class, migrations
-- [ ] Unit seeding — insert default units on first launch
-- [ ] Exercises screen — list, fuzzy search, add flow
-- [ ] Set logging screen — current session, ghost sets, RPE, auto-save
-- [ ] History screen — clustered sessions, read-only
+- [ ] Build and run on device — fix any compile errors
+- [ ] Design system pass once aesthetic direction is confirmed
+- [ ] Smoke test all screens and flows
 
 ## Backlog (post-MVP)
 
