@@ -1,6 +1,9 @@
 package com.tvandinther.reps.ui.history
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -9,10 +12,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -20,13 +22,28 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.tvandinther.reps.domain.ExerciseGroup
 import com.tvandinther.reps.domain.Session
+import com.tvandinther.reps.ui.theme.BarlowCondensedFamily
+import com.tvandinther.reps.ui.theme.ColorBackground
+import com.tvandinther.reps.ui.theme.ColorDividerSoft
+import com.tvandinther.reps.ui.theme.ColorInk
+import com.tvandinther.reps.ui.theme.ColorInk2
+import com.tvandinther.reps.ui.theme.ColorInk4
+import com.tvandinther.reps.ui.theme.ColorInk5
+import com.tvandinther.reps.ui.theme.ColorSignal
+import com.tvandinther.reps.ui.theme.ColorSignalEdge
+import com.tvandinther.reps.ui.theme.ColorSignalShadowBg
+import com.tvandinther.reps.ui.theme.SpectralFamily
+import com.tvandinther.reps.ui.theme.StyleBody
+import com.tvandinther.reps.ui.theme.StyleDataS
+import com.tvandinther.reps.ui.theme.StyleEyebrow
+import com.tvandinther.reps.ui.theme.StyleH3
 import org.koin.androidx.compose.koinViewModel
 import java.time.Instant
 import java.time.ZoneId
@@ -47,9 +64,9 @@ fun HistoryScreen(
         ) {
             Spacer(Modifier.height(64.dp))
             Text(
-                "No sessions yet.",
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                "NO SESSIONS YET.",
+                style = StyleEyebrow,
+                color = Color(0xFF222222),
             )
         }
         return
@@ -63,7 +80,12 @@ fun HistoryScreen(
                 session = session,
                 exerciseNames = uiState.exercises,
             )
-            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(ColorDividerSoft),
+            )
         }
     }
 }
@@ -78,72 +100,164 @@ private fun SessionCard(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { expanded = !expanded }
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .background(ColorBackground)
+            .clickable { expanded = !expanded },
     ) {
-        Text(
-            text = formatSessionHeader(session.startedAt, session.endedAt),
-            fontSize = 13.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontWeight = FontWeight.Medium,
-        )
-        Spacer(Modifier.height(6.dp))
-
-        session.sets.forEach { group ->
-            val exerciseName = (exerciseNames[group.exerciseId]?.name ?: "Unknown").uppercase()
-            if (expanded) {
+        // ── Session header row ──────────────────────────────────────────────
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 18.dp, vertical = 11.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = exerciseName,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(top = 8.dp),
+                    text = formatSessionDate(session.startedAt).uppercase(),
+                    style = StyleH3.copy(fontSize = 15.sp),
+                    color = ColorInk,
                 )
-                group.sets.forEachIndexed { index, set ->
-                    Row(modifier = Modifier.padding(start = 8.dp, top = 2.dp)) {
-                        Text(
-                            text = "${index + 1}.  ",
-                            fontSize = 13.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        Text(
-                            text = buildSetSummary(set),
-                            fontSize = 13.sp,
-                            color = MaterialTheme.colorScheme.onBackground,
-                        )
-                        set.note?.let { note ->
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text = formatSessionTimeRange(session.startedAt, session.endedAt).uppercase(),
+                    style = StyleBody.copy(fontSize = 12.sp),
+                    color = ColorInk4,
+                )
+            }
+            Text(
+                text = if (expanded) "−" else "+",
+                fontFamily = BarlowCondensedFamily,
+                fontWeight = FontWeight.Bold,
+                fontSize = 15.sp,
+                color = ColorSignal,
+            )
+        }
+
+        // ── Expanded detail ─────────────────────────────────────────────────
+        if (expanded) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 18.dp)
+                    .padding(bottom = 11.dp),
+            ) {
+                session.sets.forEach { group ->
+                    val exerciseName = (exerciseNames[group.exerciseId]?.name ?: "Unknown").uppercase()
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = exerciseName,
+                        style = StyleH3.copy(fontSize = 15.sp, letterSpacing = 2.25.sp),
+                        color = ColorInk2,
+                    )
+                    group.sets.forEachIndexed { index, set ->
+                        Row(
+                            modifier = Modifier.padding(start = 0.dp, top = 3.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
                             Text(
-                                text = "  $note",
-                                fontSize = 13.sp,
-                                fontStyle = FontStyle.Italic,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                text = "${index + 1}",
+                                style = StyleH3,
+                                color = ColorInk4,
+                                modifier = Modifier.width(20.dp),
                             )
+                            Spacer(Modifier.width(6.dp))
+                            // Volume
+                            Text(
+                                text = formatValue(set.volumeValue),
+                                fontFamily = SpectralFamily,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp,
+                                color = ColorInk,
+                            )
+                            // Resistance
+                            set.resistanceValue?.let { res ->
+                                Text(
+                                    text = " × ",
+                                    fontFamily = BarlowCondensedFamily,
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 14.sp,
+                                    color = ColorInk5,
+                                )
+                                Text(
+                                    text = formatValue(res),
+                                    fontFamily = SpectralFamily,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp,
+                                    color = ColorInk,
+                                )
+                            }
+                            // RPE chip
+                            set.rpe?.let { rpe ->
+                                Spacer(Modifier.width(8.dp))
+                                Box(
+                                    modifier = Modifier
+                                        .background(ColorSignalShadowBg)
+                                        .border(1.dp, ColorSignalEdge)
+                                        .padding(horizontal = 6.dp, vertical = 2.dp),
+                                ) {
+                                    Row(verticalAlignment = Alignment.Bottom) {
+                                        Text(
+                                            text = "RPE ",
+                                            fontFamily = BarlowCondensedFamily,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 7.sp,
+                                            color = ColorSignal,
+                                            letterSpacing = 0.5.sp,
+                                        )
+                                        Text(
+                                            text = "$rpe",
+                                            style = StyleDataS,
+                                            color = ColorSignal,
+                                        )
+                                    }
+                                }
+                            }
+                            // Note
+                            set.note?.let { note ->
+                                Spacer(Modifier.width(6.dp))
+                                Text(
+                                    text = note,
+                                    style = StyleBody.copy(
+                                        fontWeight = FontWeight.Normal,
+                                        color = ColorInk4,
+                                    ),
+                                    color = ColorInk4,
+                                )
+                            }
                         }
                     }
                 }
-            } else {
-                Text(
-                    text = exerciseName,
-                    fontSize = 15.sp,
-                    color = MaterialTheme.colorScheme.onBackground,
-                )
+            }
+        } else {
+            // Collapsed: show exercise names inline
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 18.dp)
+                    .padding(bottom = 8.dp),
+            ) {
+                session.sets.forEach { group ->
+                    val exerciseName = (exerciseNames[group.exerciseId]?.name ?: "Unknown").uppercase()
+                    Text(
+                        text = exerciseName,
+                        style = StyleBody.copy(fontSize = 12.sp),
+                        color = ColorInk2,
+                    )
+                }
             }
         }
     }
 }
 
-private fun buildSetSummary(set: com.tvandinther.reps.domain.SessionSet): String {
-    val vol = formatValue(set.volumeValue)
-    val res = set.resistanceValue?.let { " × ${formatValue(it)}" } ?: ""
-    val rpe = set.rpe?.let { "  RPE $it" } ?: ""
-    return "$vol$res$rpe"
-}
-
 private val dateFormatter = DateTimeFormatter.ofPattern("EEEE d MMM", Locale.getDefault())
 private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm", Locale.getDefault())
 
-private fun formatSessionHeader(startMs: Long, endMs: Long): String {
+private fun formatSessionDate(startMs: Long): String {
     val zone = ZoneId.systemDefault()
-    val date = Instant.ofEpochMilli(startMs).atZone(zone).format(dateFormatter)
+    return Instant.ofEpochMilli(startMs).atZone(zone).format(dateFormatter)
+}
+
+private fun formatSessionTimeRange(startMs: Long, endMs: Long): String {
+    val zone = ZoneId.systemDefault()
     val startTime = Instant.ofEpochMilli(startMs).atZone(zone).format(timeFormatter)
     val endTime = Instant.ofEpochMilli(endMs).atZone(zone).format(timeFormatter)
     val totalMinutes = (endMs - startMs) / 60_000
@@ -154,7 +268,7 @@ private fun formatSessionHeader(startMs: Long, endMs: Long): String {
         hours > 0 -> "${hours}h"
         else -> "${minutes}m"
     }
-    return "$date · $startTime – $endTime ($duration)"
+    return "$startTime – $endTime ($duration)"
 }
 
 private fun formatValue(v: Double): String =

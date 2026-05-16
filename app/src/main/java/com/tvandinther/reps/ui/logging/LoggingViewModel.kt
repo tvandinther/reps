@@ -139,4 +139,18 @@ class LoggingViewModel(
             lastDeletedSet.value = null
         }
     }
+
+    fun updateSet(setId: Long, volumeValue: Double, resistanceValue: Double?, rpe: Int?, note: String?) {
+        viewModelScope.launch {
+            val existing = setDao.getById(setId) ?: return@launch
+            setDao.update(
+                existing.copy(
+                    volumeValue = volumeValue,
+                    resistanceValue = resistanceValue,
+                    rpe = rpe,
+                    note = note?.takeIf { it.isNotBlank() },
+                )
+            )
+        }
+    }
 }

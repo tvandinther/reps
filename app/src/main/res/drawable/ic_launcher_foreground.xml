@@ -4,10 +4,26 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+
+    <!-- Subtle inner border (matches SVG: inset 1.3dp, rx 22.8dp, stroke #1a1a1a) -->
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M54,34 L54,74 M34,54 L74,54"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="6"
+        android:pathData="M24.1,1.3 H83.9 A22.8,22.8 0 0 1 106.7,24.1 V83.9 A22.8,22.8 0 0 1 83.9,106.7 H24.1 A22.8,22.8 0 0 1 1.3,83.9 V24.1 A22.8,22.8 0 0 1 24.1,1.3 Z"
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#1A1A1A"
+        android:strokeWidth="0.5" />
+
+    <!-- Circle: r=32, stroke-only -->
+    <path
+        android:pathData="M54,22 A32,32 0 1,0 54,86 A32,32 0 1,0 54,22"
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#D63A0A"
+        android:strokeWidth="5.9" />
+
+    <!-- Plus: arms ±17.7dp from centre, round linecaps -->
+    <path
+        android:pathData="M54,36.3 V71.7 M36.3,54 H71.7"
+        android:strokeColor="#D63A0A"
+        android:strokeWidth="5.9"
         android:strokeLineCap="round" />
+
 </vector>

@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.tvandinther.reps.data.model.SetEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -23,4 +24,7 @@ interface SetDao {
 
     @Query("DELETE FROM sets WHERE id = :setId")
     suspend fun delete(setId: Long)
+
+    @Update
+    suspend fun update(set: SetEntity)
 }
