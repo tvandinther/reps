@@ -23,15 +23,19 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.tvandinther.reps.ui.exercises.EditExerciseScreen
 import com.tvandinther.reps.ui.exercises.ExercisesScreen
 import com.tvandinther.reps.ui.history.HistoryScreen
 import com.tvandinther.reps.ui.logging.LoggingScreen
+import com.tvandinther.reps.ui.settings.SettingsScreen
 import kotlinx.serialization.Serializable
 
 @Serializable object ExercisesTab
 @Serializable object ExercisesList
 @Serializable data class SetLogging(val exerciseId: Long)
+@Serializable data class ExerciseEdit(val exerciseId: Long)
 @Serializable object HistoryTab
+@Serializable object SettingsTab
 
 @Composable
 fun RepsApp() {
@@ -42,6 +46,7 @@ fun RepsApp() {
     val tabs = listOf(
         Tab("Exercises", ExercisesTab),
         Tab("History", HistoryTab),
+        Tab("Settings", SettingsTab),
     )
 
     Scaffold(
@@ -87,6 +92,17 @@ fun RepsApp() {
                             onExerciseSelected = { exerciseId ->
                                 navController.navigate(SetLogging(exerciseId))
                             },
+                            onEditExercise = { exerciseId ->
+                                navController.navigate(ExerciseEdit(exerciseId))
+                            },
+                        )
+                    }
+                    composable<ExerciseEdit> { backStackEntry ->
+                        val route: ExerciseEdit = backStackEntry.toRoute()
+                        EditExerciseScreen(
+                            exerciseId = route.exerciseId,
+                            onBack = { navController.popBackStack() },
+                            onDeleted = { navController.popBackStack() },
                         )
                     }
                     composable<SetLogging> { backStackEntry ->
@@ -94,11 +110,15 @@ fun RepsApp() {
                         LoggingScreen(
                             exerciseId = route.exerciseId,
                             onBack = { navController.popBackStack() },
+                            onEditExercise = { navController.navigate(ExerciseEdit(route.exerciseId)) },
                         )
                     }
                 }
                 composable<HistoryTab> {
                     HistoryScreen()
+                }
+                composable<SettingsTab> {
+                    SettingsScreen()
                 }
             }
         }

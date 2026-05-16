@@ -1,22 +1,26 @@
 package com.tvandinther.reps.domain
 
-import com.tvandinther.reps.data.model.SetWithBreak
+import com.tvandinther.reps.data.model.SetEntity
 
 class SessionAssembler {
 
     // Input is ordered by logged_at DESC (most recent first), as returned by the DAO.
-    // session_break = 1 means the gap before this set (looking backwards in time) exceeds
-    // the threshold — i.e., this set is the most recent set of an *older* session.
-    fun assemble(rows: List<SetWithBreak>): List<Session> {
+    // A new session boundary is declared when the gap between consecutive sets exceeds gapMs.
+    fun assemble(rows: List<SetEntity>, gapMs: Long): List<Session> {
         if (rows.isEmpty()) return emptyList()
 
-        val sessions = mutableListOf<MutableList<SetWithBreak>>()
-        var current = mutableListOf<SetWithBreak>()
+        val sessions = mutableListOf<MutableList<SetEntity>>()
+        var current = mutableListOf<SetEntity>()
 
-        for (row in rows) {
-            if (row.sessionBreak == 1 && current.isNotEmpty()) {
-                sessions.add(current)
-                current = mutableListOf()
+        for (i in rows.indices) {
+            val row = rows[i]
+            if (i > 0) {
+                val prev = rows[i - 1]
+                // rows are DESC, so prev.loggedAt > row.loggedAt
+                if ((prev.loggedAt - row.loggedAt) > gapMs && current.isNotEmpty()) {
+                    sessions.add(current)
+                    current = mutableListOf()
+                }
             }
             current.add(row)
         }
@@ -43,6 +47,7 @@ class SessionAssembler {
             Session(
                 sets = groupedByExercise,
                 startedAt = sessionRows.minOf { it.loggedAt },
+                endedAt = sessionRows.maxOf { it.loggedAt },
             )
         }
     }

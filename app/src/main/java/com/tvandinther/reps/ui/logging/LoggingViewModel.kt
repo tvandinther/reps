@@ -2,12 +2,14 @@ package com.tvandinther.reps.ui.logging
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tvandinther.reps.data.AppSettings
 import com.tvandinther.reps.data.db.ExerciseDao
 import com.tvandinther.reps.data.db.SetDao
 import com.tvandinther.reps.data.db.UnitDao
 import com.tvandinther.reps.data.model.ExerciseEntity
 import com.tvandinther.reps.data.model.SetEntity
 import com.tvandinther.reps.data.model.UnitEntity
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -15,14 +17,13 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-private const val SESSION_GAP_MS = 90L * 60 * 1000
-
 data class LoggingUiState(
     val exercise: ExerciseEntity? = null,
     val volumeUnit: UnitEntity? = null,
     val resistanceUnit: UnitEntity? = null,
     val currentSessionSets: List<SetEntity> = emptyList(),
     val previousSessionSets: List<SetEntity> = emptyList(),
+    val isLeftHanded: Boolean = false,
 )
 
 val LoggingUiState.hideResistanceField: Boolean
@@ -33,6 +34,7 @@ class LoggingViewModel(
     private val exerciseDao: ExerciseDao,
     private val setDao: SetDao,
     private val unitDao: UnitDao,
+    private val appSettings: AppSettings,
 ) : ViewModel() {
 
     private val exercise = exerciseDao.getById(exerciseId).filterNotNull()
@@ -44,14 +46,19 @@ class LoggingViewModel(
     private val allSetsForExercise = setDao.getForExercise(exerciseId)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    private val lastDeletedSet = MutableStateFlow<SetEntity?>(null)
+
     val uiState: StateFlow<LoggingUiState> = combine(
         exercise,
         allUnits,
         allSetsForExercise,
-    ) { ex, units, sets ->
+        appSettings.sessionGapMinutes,
+        appSettings.isLeftHanded,
+    ) { ex, units, sets, sessionGapMinutes, isLeftHanded ->
         if (ex == null) return@combine LoggingUiState()
         val unitMap = units.associateBy { it.id }
         val now = System.currentTimeMillis()
+        val sessionGapMs = sessionGapMinutes * 60_000L
 
         // Cluster sets into sessions by gap. Work backwards from the most recent set.
         val sortedDesc = sets.sortedByDescending { it.loggedAt }
@@ -62,7 +69,7 @@ class LoggingViewModel(
         for (set in sortedDesc) {
             if (sessionBoundary == null) {
                 // First set defines the anchor for the current session
-                if (now - set.loggedAt < SESSION_GAP_MS) {
+                if (now - set.loggedAt < sessionGapMs) {
                     currentSets.add(set)
                     sessionBoundary = set.loggedAt
                 } else {
@@ -70,7 +77,7 @@ class LoggingViewModel(
                     previousSets.add(set)
                 }
             } else {
-                if (sessionBoundary - set.loggedAt < SESSION_GAP_MS) {
+                if (sessionBoundary - set.loggedAt < sessionGapMs) {
                     currentSets.add(set)
                     sessionBoundary = set.loggedAt
                 } else {
@@ -84,7 +91,7 @@ class LoggingViewModel(
         if (previousSets.isNotEmpty()) {
             val prevAnchor = previousSets[0].loggedAt
             for (set in previousSets) {
-                if (prevAnchor - set.loggedAt < SESSION_GAP_MS) {
+                if (prevAnchor - set.loggedAt < sessionGapMs) {
                     prevSession.add(set)
                 } else break
             }
@@ -96,6 +103,7 @@ class LoggingViewModel(
             resistanceUnit = unitMap[ex.resistanceUnitId],
             currentSessionSets = currentSets.sortedBy { it.loggedAt },
             previousSessionSets = prevSession.sortedBy { it.loggedAt },
+            isLeftHanded = isLeftHanded,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), LoggingUiState())
 
@@ -117,6 +125,18 @@ class LoggingViewModel(
     }
 
     fun deleteSet(setId: Long) {
-        viewModelScope.launch { setDao.delete(setId) }
+        viewModelScope.launch {
+            val entity = setDao.getById(setId)
+            lastDeletedSet.value = entity
+            setDao.delete(setId)
+        }
+    }
+
+    fun undoDelete() {
+        viewModelScope.launch {
+            val entity = lastDeletedSet.value ?: return@launch
+            setDao.insert(entity)
+            lastDeletedSet.value = null
+        }
     }
 }

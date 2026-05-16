@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.tvandinther.reps.data.model.ExerciseEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -12,7 +13,7 @@ interface ExerciseDao {
     @Query(
         """
         SELECT * FROM exercises
-        ORDER BY last_logged_at DESC NULLS LAST, created_at DESC
+        ORDER BY CASE WHEN last_logged_at IS NULL THEN 1 ELSE 0 END, last_logged_at DESC, created_at DESC
         """
     )
     fun getAll(): Flow<List<ExerciseEntity>>
@@ -24,7 +25,7 @@ interface ExerciseDao {
         """
         SELECT * FROM exercises
         WHERE name LIKE '%' || :query || '%'
-        ORDER BY last_logged_at DESC NULLS LAST, created_at DESC
+        ORDER BY CASE WHEN last_logged_at IS NULL THEN 1 ELSE 0 END, last_logged_at DESC, created_at DESC
         """
     )
     fun search(query: String): Flow<List<ExerciseEntity>>
@@ -34,4 +35,10 @@ interface ExerciseDao {
 
     @Query("UPDATE exercises SET last_logged_at = :timestamp WHERE id = :id")
     suspend fun updateLastLoggedAt(id: Long, timestamp: Long)
+
+    @Update
+    suspend fun update(exercise: ExerciseEntity)
+
+    @Query("DELETE FROM exercises WHERE id = :id")
+    suspend fun deleteById(id: Long)
 }

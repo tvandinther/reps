@@ -23,6 +23,7 @@ data class ExerciseRow(
     val volumeUnit: UnitEntity?,
     val resistanceUnit: UnitEntity?,
     val lastSet: SetEntity?,
+    val setCount: Int,
 )
 
 data class ExercisesUiState(
@@ -49,15 +50,15 @@ class ExercisesViewModel(
     private val allUnits = unitDao.getAll()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    // For each exercise, the most recent set
-    private val lastSets = allExercises.flatMapLatest { exercises ->
+    // For each exercise, all sets (used for lastSet and setCount)
+    private val exerciseSets = allExercises.flatMapLatest { exercises ->
         combine(
             exercises.map { exercise ->
                 setDao.getForExercise(exercise.id)
             }.ifEmpty { listOf(kotlinx.coroutines.flow.flowOf(emptyList())) }
         ) { setsArrays ->
             exercises.mapIndexed { index, exercise ->
-                exercise.id to setsArrays[index].maxByOrNull { it.loggedAt }
+                exercise.id to setsArrays[index].toList()
             }.toMap()
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyMap())
@@ -66,32 +67,38 @@ class ExercisesViewModel(
         query,
         allExercises,
         allUnits,
-        lastSets,
-    ) { q, exercises, units, lastSetMap ->
+        exerciseSets,
+    ) { q, exercises, units, setsMap ->
         val unitMap = units.associateBy { it.id }
 
         val filtered = if (q.isBlank()) {
             exercises
         } else {
+            val lower = q.lowercase()
             exercises
-                .map { exercise ->
-                    exercise to FuzzySearch.ratio(q.lowercase(), exercise.name.lowercase())
+                .mapNotNull { exercise ->
+                    val nameLower = exercise.name.lowercase()
+                    // Substring match always wins; fuzzy is a typo fallback
+                    val score = if (nameLower.contains(lower)) 100
+                                else FuzzySearch.partialRatio(lower, nameLower)
+                    if (score >= 60) exercise to score else null
                 }
-                .filter { (_, score) -> score >= 60 }
                 .sortedByDescending { (_, score) -> score }
                 .map { (exercise, _) -> exercise }
         }
 
         val rows = filtered.map { exercise ->
+            val sets = setsMap[exercise.id] ?: emptyList()
             ExerciseRow(
                 exercise = exercise,
                 volumeUnit = unitMap[exercise.volumeUnitId],
                 resistanceUnit = unitMap[exercise.resistanceUnitId],
-                lastSet = lastSetMap[exercise.id],
+                lastSet = sets.maxByOrNull { it.loggedAt },
+                setCount = sets.size,
             )
         }
 
-        val showAdd = q.isNotBlank() && rows.isEmpty()
+        val showAdd = q.isNotBlank() && exercises.none { it.name.equals(q.trim(), ignoreCase = true) }
 
         ExercisesUiState(
             query = q,
@@ -109,12 +116,18 @@ class ExercisesViewModel(
         name: String,
         volumeUnitId: Long,
         resistanceUnitId: Long,
+        note: String? = null,
     ): Long = exerciseDao.insert(
         ExerciseEntity(
-            name = name.trim(),
+            name = name.trim().uppercase(),
             volumeUnitId = volumeUnitId,
             resistanceUnitId = resistanceUnitId,
+            note = note?.takeIf { it.isNotBlank() },
             createdAt = System.currentTimeMillis(),
         )
     )
+
+    fun deleteExercise(id: Long) {
+        viewModelScope.launch { exerciseDao.deleteById(id) }
+    }
 }

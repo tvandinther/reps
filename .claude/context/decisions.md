@@ -36,6 +36,14 @@ Architectural and design decisions with rationale. Most recent first.
 
 ---
 
+## Session gap computed in Kotlin, not SQL window functions
+
+**Date:** 2026-05-16  
+**Decision:** The session break computation was moved from a SQL `LAG()` window function to Kotlin in `SessionAssembler`.  
+**Rationale:** Room's KSP SQL parser does not support window functions in `@Query` annotations. Since the sets are already loaded as a `Flow<List<SetEntity>>` for reactivity, computing gaps in Kotlin is equivalent and avoids `@RawQuery` complexity. The `SetWithBreak` POJO was removed. The architecture principle (sessions derived at query time, never stored) is preserved — the derivation just happens one layer up.
+
+---
+
 ## Minimum API 30
 
 **Date:** project start  

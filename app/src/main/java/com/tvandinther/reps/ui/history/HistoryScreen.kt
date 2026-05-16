@@ -82,7 +82,7 @@ private fun SessionCard(
             .padding(horizontal = 16.dp, vertical = 12.dp),
     ) {
         Text(
-            text = formatSessionDate(session.startedAt),
+            text = formatSessionHeader(session.startedAt, session.endedAt),
             fontSize = 13.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontWeight = FontWeight.Medium,
@@ -90,7 +90,7 @@ private fun SessionCard(
         Spacer(Modifier.height(6.dp))
 
         session.sets.forEach { group ->
-            val exerciseName = exerciseNames[group.exerciseId]?.name ?: "Unknown"
+            val exerciseName = (exerciseNames[group.exerciseId]?.name ?: "Unknown").uppercase()
             if (expanded) {
                 Text(
                     text = exerciseName,
@@ -138,12 +138,24 @@ private fun buildSetSummary(set: com.tvandinther.reps.domain.SessionSet): String
     return "$vol$res$rpe"
 }
 
-private val dateFormatter = DateTimeFormatter.ofPattern("EEEE d MMM · HH:mm", Locale.getDefault())
+private val dateFormatter = DateTimeFormatter.ofPattern("EEEE d MMM", Locale.getDefault())
+private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm", Locale.getDefault())
 
-private fun formatSessionDate(timestampMs: Long): String =
-    Instant.ofEpochMilli(timestampMs)
-        .atZone(ZoneId.systemDefault())
-        .format(dateFormatter)
+private fun formatSessionHeader(startMs: Long, endMs: Long): String {
+    val zone = ZoneId.systemDefault()
+    val date = Instant.ofEpochMilli(startMs).atZone(zone).format(dateFormatter)
+    val startTime = Instant.ofEpochMilli(startMs).atZone(zone).format(timeFormatter)
+    val endTime = Instant.ofEpochMilli(endMs).atZone(zone).format(timeFormatter)
+    val totalMinutes = (endMs - startMs) / 60_000
+    val hours = totalMinutes / 60
+    val minutes = totalMinutes % 60
+    val duration = when {
+        hours > 0 && minutes > 0 -> "${hours}h ${minutes}m"
+        hours > 0 -> "${hours}h"
+        else -> "${minutes}m"
+    }
+    return "$date · $startTime – $endTime ($duration)"
+}
 
 private fun formatValue(v: Double): String =
     if (v == v.toLong().toDouble()) v.toLong().toString() else v.toString()

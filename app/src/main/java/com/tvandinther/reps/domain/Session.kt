@@ -3,6 +3,7 @@ package com.tvandinther.reps.domain
 data class Session(
     val sets: List<ExerciseGroup>,
     val startedAt: Long,
+    val endedAt: Long,
 )
 
 data class ExerciseGroup(

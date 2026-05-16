@@ -4,7 +4,7 @@ Current state of the build. Update at the end of every session.
 
 ---
 
-## Status: Full MVP scaffolded — awaiting first build on Android machine
+## Status: First build succeeded — APK compiles cleanly from WSL2
 
 ---
 
@@ -25,17 +25,16 @@ Current state of the build. Update at the end of every session.
 - [x] **Phase 4:** Set logging screen — current session, ghost sets, swipe-to-delete, Add Set bottom sheet, RPE, auto-save
 - [x] **Phase 5:** History screen — session assembly from LAG() query, collapsible sessions
 - [x] **Phase 6:** Koin wiring, dark theme, navigation, StateFlow throughout
+- [x] **Phase 7:** First successful build from WSL2 — fixed SDK path, launcher icons, Room SQL parser issues
 
 ## In Progress
 
-- [ ] First build on Android machine (project not yet built/tested)
 - [ ] Design direction — choosing between Direction 3 and Direction 4
 
 ## Up Next
 
-- [ ] Build and run on device — fix any compile errors
+- [ ] Install APK on device and smoke test all screens and flows
 - [ ] Design system pass once aesthetic direction is confirmed
-- [ ] Smoke test all screens and flows
 
 ## Backlog (post-MVP)
 

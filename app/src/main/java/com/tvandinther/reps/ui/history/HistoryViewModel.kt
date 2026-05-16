@@ -2,6 +2,7 @@ package com.tvandinther.reps.ui.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tvandinther.reps.data.AppSettings
 import com.tvandinther.reps.data.db.ExerciseDao
 import com.tvandinther.reps.data.db.SetDao
 import com.tvandinther.reps.data.model.ExerciseEntity
@@ -12,8 +13,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
-private const val SESSION_GAP_MS = 90L * 60 * 1000
-
 data class HistoryUiState(
     val sessions: List<Session> = emptyList(),
     val exercises: Map<Long, ExerciseEntity> = emptyMap(),
@@ -22,16 +21,18 @@ data class HistoryUiState(
 class HistoryViewModel(
     setDao: SetDao,
     exerciseDao: ExerciseDao,
+    appSettings: AppSettings,
 ) : ViewModel() {
 
     private val assembler = SessionAssembler()
 
     val uiState: StateFlow<HistoryUiState> = combine(
-        setDao.getSetsWithSessionBreaks(SESSION_GAP_MS),
+        setDao.getAll(),
         exerciseDao.getAll(),
-    ) { setsWithBreaks, exercises ->
+        appSettings.sessionGapMinutes,
+    ) { sets, exercises, gapMinutes ->
         HistoryUiState(
-            sessions = assembler.assemble(setsWithBreaks),
+            sessions = assembler.assemble(sets, gapMinutes * 60_000L),
             exercises = exercises.associateBy { it.id },
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), HistoryUiState())
