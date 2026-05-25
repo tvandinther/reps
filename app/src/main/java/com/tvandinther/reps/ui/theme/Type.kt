@@ -80,8 +80,13 @@ val StyleButton = TextStyle(
     letterSpacing = 1.5.sp,    // 0.1 em × 15 sp
 )
 
-/** Navigation tab label — 9sp, Bold (700), tracking 0.35 em, ALL CAPS */
-val StyleTab = StyleEyebrow
+/** Navigation tab label — 15sp, Bold (700), tracking 0.25 em, ALL CAPS */
+val StyleTab = TextStyle(
+    fontFamily   = BarlowCondensedFamily,
+    fontWeight   = FontWeight.Bold,
+    fontSize     = 15.sp,
+    letterSpacing = 3.75.sp,  // 0.25 em × 15 sp
+)
 
 /** Large set values (Spectral) — 22sp, Bold (700) */
 val StyleDataL = TextStyle(

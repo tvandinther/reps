@@ -2,11 +2,14 @@
   "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.13.7/.schema/devbox.schema.json",
   "packages": [
     "jdk17@latest",
-    "gradle@latest"
+    "gradle@latest",
+    "android-tools@latest",
+    ".#android-sdk",
+    "just@latest"
   ],
   "shell": {
     "scripts": {
-      "build": ["./gradlew build"],
+      "build":           ["./gradlew build"],
       "install-wrapper": ["gradle wrapper --gradle-version=8.9"]
     }
   }

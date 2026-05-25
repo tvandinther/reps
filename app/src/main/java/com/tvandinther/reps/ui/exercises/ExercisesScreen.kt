@@ -616,16 +616,16 @@ internal fun UnitPicker(
             if (isSelected) {
                 Button(
                     onClick = { onSelect(unit.id) },
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 2.dp),
                 ) {
-                    Text(unit.label.uppercase(), style = StyleLabel)
+                    Text(unit.label.uppercase(), style = StyleLabel.copy(fontSize = 12.sp, letterSpacing = 2.4.sp))
                 }
             } else {
                 TextButton(
                     onClick = { onSelect(unit.id) },
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 2.dp),
                 ) {
-                    Text(unit.label.uppercase(), style = StyleLabel, color = ColorInk4)
+                    Text(unit.label.uppercase(), style = StyleLabel.copy(fontSize = 12.sp, letterSpacing = 2.4.sp), color = ColorInk4)
                 }
             }
         }

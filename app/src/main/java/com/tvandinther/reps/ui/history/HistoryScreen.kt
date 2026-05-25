@@ -113,13 +113,13 @@ private fun SessionCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = formatSessionDate(session.startedAt).uppercase(),
-                    style = StyleH3.copy(fontSize = 15.sp),
+                    style = StyleH3.copy(fontSize = 17.sp),
                     color = ColorInk,
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(
                     text = formatSessionTimeRange(session.startedAt, session.endedAt).uppercase(),
-                    style = StyleBody.copy(fontSize = 12.sp),
+                    style = StyleBody.copy(fontSize = 14.sp),
                     color = ColorInk4,
                 )
             }
@@ -145,7 +145,7 @@ private fun SessionCard(
                     Spacer(Modifier.height(8.dp))
                     Text(
                         text = exerciseName,
-                        style = StyleH3.copy(fontSize = 15.sp, letterSpacing = 2.25.sp),
+                        style = StyleH3.copy(fontSize = 17.sp, letterSpacing = 2.55.sp),
                         color = ColorInk2,
                     )
                     group.sets.forEachIndexed { index, set ->
@@ -155,9 +155,9 @@ private fun SessionCard(
                         ) {
                             Text(
                                 text = "${index + 1}",
-                                style = StyleH3,
+                                style = StyleH3.copy(fontSize = 15.sp),
                                 color = ColorInk4,
-                                modifier = Modifier.width(20.dp),
+                                modifier = Modifier.width(22.dp),
                             )
                             Spacer(Modifier.width(6.dp))
                             // Volume
@@ -165,7 +165,7 @@ private fun SessionCard(
                                 text = formatValue(set.volumeValue),
                                 fontFamily = SpectralFamily,
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp,
+                                fontSize = 20.sp,
                                 color = ColorInk,
                             )
                             // Resistance
@@ -174,14 +174,14 @@ private fun SessionCard(
                                     text = " × ",
                                     fontFamily = BarlowCondensedFamily,
                                     fontWeight = FontWeight.Normal,
-                                    fontSize = 14.sp,
+                                    fontSize = 16.sp,
                                     color = ColorInk5,
                                 )
                                 Text(
                                     text = formatValue(res),
                                     fontFamily = SpectralFamily,
                                     fontWeight = FontWeight.Bold,
-                                    fontSize = 18.sp,
+                                    fontSize = 20.sp,
                                     color = ColorInk,
                                 )
                             }
@@ -199,7 +199,7 @@ private fun SessionCard(
                                             text = "RPE ",
                                             fontFamily = BarlowCondensedFamily,
                                             fontWeight = FontWeight.Bold,
-                                            fontSize = 7.sp,
+                                            fontSize = 9.sp,
                                             color = ColorSignal,
                                             letterSpacing = 0.5.sp,
                                         )
@@ -239,7 +239,7 @@ private fun SessionCard(
                     val exerciseName = (exerciseNames[group.exerciseId]?.name ?: "Unknown").uppercase()
                     Text(
                         text = exerciseName,
-                        style = StyleBody.copy(fontSize = 12.sp),
+                        style = StyleBody.copy(fontSize = 14.sp),
                         color = ColorInk2,
                     )
                 }
