@@ -153,14 +153,31 @@ fun LoggingScreen(
                 if (uiState.previousSessionSets.isNotEmpty()) {
                     item { SectionHeader("Last session", muted = true) }
                     items(uiState.previousSessionSets, key = { "ghost-${it.id}" }) { set ->
-                        Box(modifier = Modifier.alpha(0.35f)) {
-                            SetRow(
-                                number = uiState.previousSessionSets.indexOf(set) + 1,
-                                set = set,
-                                hideResistance = uiState.hideResistanceField,
-                                volumeUnitLabel = uiState.volumeUnit?.label ?: "",
-                                resistanceUnitLabel = uiState.resistanceUnit?.label ?: "",
-                            )
+                        SwipeableSetRow(
+                            onDelete = {
+                                viewModel.deleteSet(set.id)
+                                scope.launch {
+                                    val result = snackbarHostState.showSnackbar(
+                                        message = "Set deleted",
+                                        actionLabel = "Undo",
+                                        duration = SnackbarDuration.Long,
+                                    )
+                                    if (result == SnackbarResult.ActionPerformed) {
+                                        viewModel.undoDelete()
+                                    }
+                                }
+                            },
+                            onEdit = { editingSet = set },
+                        ) {
+                            Box(modifier = Modifier.alpha(0.35f)) {
+                                SetRow(
+                                    number = uiState.previousSessionSets.indexOf(set) + 1,
+                                    set = set,
+                                    hideResistance = uiState.hideResistanceField,
+                                    volumeUnitLabel = uiState.volumeUnit?.label ?: "",
+                                    resistanceUnitLabel = uiState.resistanceUnit?.label ?: "",
+                                )
+                            }
                         }
                         Box(
                             modifier = Modifier
