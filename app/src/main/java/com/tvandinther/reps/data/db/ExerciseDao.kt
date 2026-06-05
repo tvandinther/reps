@@ -34,7 +34,7 @@ interface ExerciseDao {
     suspend fun insert(exercise: ExerciseEntity): Long
 
     @Query("UPDATE exercises SET last_logged_at = :timestamp WHERE id = :id")
-    suspend fun updateLastLoggedAt(id: Long, timestamp: Long)
+    suspend fun updateLastLoggedAt(id: Long, timestamp: Long?)
 
     @Update
     suspend fun update(exercise: ExerciseEntity)

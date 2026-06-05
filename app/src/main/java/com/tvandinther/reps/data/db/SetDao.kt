@@ -25,6 +25,9 @@ interface SetDao {
     @Query("DELETE FROM sets WHERE id = :setId")
     suspend fun delete(setId: Long)
 
+    @Query("SELECT MAX(logged_at) FROM sets WHERE exercise_id = :exerciseId")
+    suspend fun getLatestLoggedAt(exerciseId: Long): Long?
+
     @Update
     suspend fun update(set: SetEntity)
 }

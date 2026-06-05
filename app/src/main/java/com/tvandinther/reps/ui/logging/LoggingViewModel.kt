@@ -126,9 +126,11 @@ class LoggingViewModel(
 
     fun deleteSet(setId: Long) {
         viewModelScope.launch {
-            val entity = setDao.getById(setId)
+            val entity = setDao.getById(setId) ?: return@launch
             lastDeletedSet.value = entity
             setDao.delete(setId)
+            val latest = setDao.getLatestLoggedAt(entity.exerciseId)
+            exerciseDao.updateLastLoggedAt(entity.exerciseId, latest)
         }
     }
 
@@ -136,6 +138,8 @@ class LoggingViewModel(
         viewModelScope.launch {
             val entity = lastDeletedSet.value ?: return@launch
             setDao.insert(entity)
+            val latest = setDao.getLatestLoggedAt(entity.exerciseId)
+            exerciseDao.updateLastLoggedAt(entity.exerciseId, latest)
             lastDeletedSet.value = null
         }
     }
