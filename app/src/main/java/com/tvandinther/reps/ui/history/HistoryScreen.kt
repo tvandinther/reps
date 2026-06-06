@@ -41,7 +41,6 @@ import com.tvandinther.reps.ui.theme.ColorSignalEdge
 import com.tvandinther.reps.ui.theme.ColorSignalShadowBg
 import com.tvandinther.reps.ui.theme.SpectralFamily
 import com.tvandinther.reps.ui.theme.StyleBody
-import com.tvandinther.reps.ui.theme.StyleDataS
 import com.tvandinther.reps.ui.theme.StyleEyebrow
 import com.tvandinther.reps.ui.theme.StyleH3
 import org.koin.androidx.compose.koinViewModel
@@ -192,23 +191,16 @@ private fun SessionCard(
                                     modifier = Modifier
                                         .background(ColorSignalShadowBg)
                                         .border(1.dp, ColorSignalEdge)
-                                        .padding(horizontal = 6.dp, vertical = 2.dp),
+                                        .padding(horizontal = 8.dp, vertical = 4.dp),
                                 ) {
-                                    Row(verticalAlignment = Alignment.Bottom) {
-                                        Text(
-                                            text = "RPE ",
-                                            fontFamily = BarlowCondensedFamily,
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 9.sp,
-                                            color = ColorSignal,
-                                            letterSpacing = 0.5.sp,
-                                        )
-                                        Text(
-                                            text = "$rpe",
-                                            style = StyleDataS,
-                                            color = ColorSignal,
-                                        )
-                                    }
+                                    Text(
+                                        text = "RPE $rpe",
+                                        fontFamily = BarlowCondensedFamily,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 14.sp,
+                                        color = ColorSignal,
+                                        letterSpacing = 0.5.sp,
+                                    )
                                 }
                             }
                             // Note

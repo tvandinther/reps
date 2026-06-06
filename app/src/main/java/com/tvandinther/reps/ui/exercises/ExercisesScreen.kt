@@ -311,7 +311,7 @@ private fun FlatSearchBar(
                     )
                 } else Modifier
             )
-            .padding(horizontal = 14.dp, vertical = 10.dp),
+            .padding(horizontal = 14.dp, vertical = 14.dp),
     ) {
         BasicTextField(
             value = query,
@@ -323,7 +323,7 @@ private fun FlatSearchBar(
             textStyle = TextStyle(
                 fontFamily = BarlowCondensedFamily,
                 fontWeight = FontWeight.Normal,
-                fontSize = 15.sp,
+                fontSize = 20.sp,
                 color = ColorInk,
                 letterSpacing = 1.5.sp,
             ),
@@ -346,7 +346,7 @@ private fun FlatSearchBar(
                                     fontFamily = BarlowCondensedFamily,
                                     fontWeight = FontWeight.Normal,
                                     fontStyle = FontStyle.Italic,
-                                    fontSize = 15.sp,
+                                    fontSize = 20.sp,
                                     color = ColorInk4,
                                     letterSpacing = 1.5.sp,
                                 ),
@@ -360,7 +360,7 @@ private fun FlatSearchBar(
                             text = "×",
                             fontFamily = BarlowCondensedFamily,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
+                            fontSize = 22.sp,
                             color = ColorInk4,
                             modifier = Modifier.combinedClickable(onClick = onClear),
                         )
@@ -381,7 +381,7 @@ private fun EyebrowDivider(label: String) {
     ) {
         Text(
             text = label,
-            style = StyleEyebrow,
+            style = StyleEyebrow.copy(fontSize = 13.sp, letterSpacing = 2.6.sp),
             color = ColorInk6,
         )
         Spacer(Modifier.width(8.dp))

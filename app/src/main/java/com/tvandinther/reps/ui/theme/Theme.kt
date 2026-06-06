@@ -26,10 +26,10 @@ val ColorSignalEdge     = Color(0xFF3D1408)   // chip border
 // ── Ink (text) ────────────────────────────────────────────────────────────────
 val ColorInk    = Color(0xFFF0F0F0)   // primary text
 val ColorInk2   = Color(0xFFE8E8E8)
-val ColorInk3   = Color(0xFF888888)   // muted
-val ColorInk4   = Color(0xFF444444)
-val ColorInk5   = Color(0xFF333333)   // faint
-val ColorInk6   = Color(0xFF222222)   // near-invisible
+val ColorInk3   = Color(0xFFAAAAAA)   // muted
+val ColorInk4   = Color(0xFF777777)
+val ColorInk5   = Color(0xFF666666)   // faint
+val ColorInk6   = Color(0xFF555555)   // near-invisible
 
 // ── Legacy aliases kept for backward compatibility ────────────────────────────
 val Background  = ColorSurfaceDeep

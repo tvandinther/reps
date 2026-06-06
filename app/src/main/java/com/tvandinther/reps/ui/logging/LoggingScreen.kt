@@ -49,8 +49,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tvandinther.reps.data.model.SetEntity
@@ -102,6 +104,7 @@ fun LoggingScreen(
             // ── Custom flat header ──────────────────────────────────────────
             LoggingHeader(
                 exerciseName = uiState.exercise?.name ?: "",
+                exerciseNote = uiState.exercise?.note,
                 volumeUnitLabel = uiState.volumeUnit?.label ?: "",
                 resistanceUnitLabel = uiState.resistanceUnit?.label ?: "",
                 onBack = onBack,
@@ -169,7 +172,7 @@ fun LoggingScreen(
                             },
                             onEdit = { editingSet = set },
                         ) {
-                            Box(modifier = Modifier.alpha(0.35f)) {
+                            Box(modifier = Modifier.alpha(0.55f)) {
                                 SetRow(
                                     number = uiState.previousSessionSets.indexOf(set) + 1,
                                     set = set,
@@ -183,7 +186,7 @@ fun LoggingScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(1.dp)
-                                .alpha(0.35f)
+                                .alpha(0.55f)
                                 .background(ColorDividerSoft),
                         )
                     }
@@ -302,11 +305,14 @@ fun LoggingScreen(
 @Composable
 private fun LoggingHeader(
     exerciseName: String,
+    exerciseNote: String?,
     volumeUnitLabel: String,
     resistanceUnitLabel: String,
     onBack: () -> Unit,
     onLongClickTitle: () -> Unit,
 ) {
+    var noteExpanded by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -349,13 +355,28 @@ private fun LoggingHeader(
                     if (isNotEmpty()) append(" × ")
                     append(resistanceUnitLabel.uppercase())
                 }
-                append("  ·  RPE OPTIONAL")
             }
             Text(
                 text = unitSub,
                 style = StyleBody,
                 color = ColorInk3,
                 modifier = Modifier.padding(top = 4.dp),
+            )
+        }
+
+        // Exercise note — tap to expand if truncated, separate from long-press area
+        if (!exerciseNote.isNullOrBlank()) {
+            Text(
+                text = exerciseNote,
+                style = StyleBody,
+                color = ColorInk3,
+                fontStyle = FontStyle.Italic,
+                maxLines = if (noteExpanded) Int.MAX_VALUE else 3,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 18.dp, vertical = 6.dp)
+                    .combinedClickable(onClick = { noteExpanded = !noteExpanded }),
             )
         }
 
@@ -389,86 +410,102 @@ private fun SetRow(
     volumeUnitLabel: String,
     resistanceUnitLabel: String,
 ) {
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(ColorBackground)
-            .padding(horizontal = 18.dp, vertical = 11.dp),
-        verticalAlignment = Alignment.CenterVertically,
+            .background(ColorBackground),
     ) {
-        // Set number
-        Text(
-            text = "$number",
-            style = StyleH3,
-            color = ColorInk5,
-            modifier = Modifier.width(28.dp),
-        )
-
-        // Volume value + unit
-        Row(verticalAlignment = Alignment.Bottom) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 18.dp, vertical = 11.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            // Set number
             Text(
-                text = formatValue(set.volumeValue),
-                style = StyleDataL,
-                color = ColorInk,
-            )
-            if (volumeUnitLabel.isNotEmpty()) {
-                Spacer(Modifier.width(3.dp))
-                Text(
-                    text = volumeUnitLabel.uppercase(),
-                    style = StyleLabel,
-                    color = ColorInk5,
-                    modifier = Modifier.padding(bottom = 3.dp),
-                )
-            }
-        }
-
-        // Separator + resistance
-        if (!hideResistance && set.resistanceValue != null) {
-            Text(
-                text = "×",
-                fontFamily = BarlowCondensedFamily,
-                fontWeight = FontWeight.Normal,
-                fontSize = 15.sp,
+                text = "$number",
+                style = StyleH3,
                 color = ColorInk5,
-                modifier = Modifier.padding(horizontal = 8.dp),
+                modifier = Modifier.width(28.dp),
             )
+
+            // Volume value + unit
             Row(verticalAlignment = Alignment.Bottom) {
                 Text(
-                    text = formatValue(set.resistanceValue),
+                    text = formatValue(set.volumeValue),
                     style = StyleDataL,
                     color = ColorInk,
                 )
-                if (resistanceUnitLabel.isNotEmpty()) {
+                if (volumeUnitLabel.isNotEmpty()) {
                     Spacer(Modifier.width(3.dp))
                     Text(
-                        text = resistanceUnitLabel.uppercase(),
+                        text = volumeUnitLabel.uppercase(),
                         style = StyleLabel,
                         color = ColorInk5,
                         modifier = Modifier.padding(bottom = 3.dp),
                     )
                 }
             }
+
+            // Separator + resistance
+            if (!hideResistance && set.resistanceValue != null) {
+                Text(
+                    text = "×",
+                    fontFamily = BarlowCondensedFamily,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 15.sp,
+                    color = ColorInk5,
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                )
+                Row(verticalAlignment = Alignment.Bottom) {
+                    Text(
+                        text = formatValue(set.resistanceValue),
+                        style = StyleDataL,
+                        color = ColorInk,
+                    )
+                    if (resistanceUnitLabel.isNotEmpty()) {
+                        Spacer(Modifier.width(3.dp))
+                        Text(
+                            text = resistanceUnitLabel.uppercase(),
+                            style = StyleLabel,
+                            color = ColorInk5,
+                            modifier = Modifier.padding(bottom = 3.dp),
+                        )
+                    }
+                }
+            }
+
+            Spacer(Modifier.weight(1f))
+
+            // RPE chip
+            set.rpe?.let { rpe ->
+                Box(
+                    modifier = Modifier
+                        .background(ColorSignalShadowBg)
+                        .border(1.dp, ColorSignalEdge)
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                ) {
+                    Text(
+                        text = "RPE $rpe",
+                        fontFamily = BarlowCondensedFamily,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        color = ColorSignal,
+                        letterSpacing = 0.5.sp,
+                    )
+                }
+            }
         }
 
-        Spacer(Modifier.weight(1f))
-
-        // RPE chip
-        set.rpe?.let { rpe ->
-            Box(
-                modifier = Modifier
-                    .background(ColorSignalShadowBg)
-                    .border(1.dp, ColorSignalEdge)
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-            ) {
-                Text(
-                    text = "RPE $rpe",
-                    fontFamily = BarlowCondensedFamily,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 11.sp,
-                    color = ColorSignal,
-                    letterSpacing = 0.5.sp,
-                )
-            }
+        // Set note
+        if (!set.note.isNullOrBlank()) {
+            Text(
+                text = set.note,
+                style = StyleBody,
+                color = ColorInk3,
+                fontStyle = FontStyle.Italic,
+                modifier = Modifier.padding(start = 46.dp, end = 18.dp, bottom = 8.dp),
+            )
         }
     }
 }
