@@ -24,7 +24,7 @@
   outputs = { self, android-nixpkgs }: {
     packages.x86_64-linux.android-sdk = android-nixpkgs.sdk.x86_64-linux (sdkPkgs: with sdkPkgs; [
       cmdline-tools-latest
-      build-tools-35-0-0
+      build-tools-34-0-0
       platform-tools
       platforms-android-35
       emulator

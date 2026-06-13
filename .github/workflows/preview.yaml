@@ -15,6 +15,9 @@ jobs:
         with:
           enable-cache: true
 
+      - name: Configure SDK path
+        run: devbox run -- sh -c 'echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties'
+
       - name: Build debug APK
         run: devbox run -- ./gradlew assembleDebug
 
