@@ -38,7 +38,7 @@ Current state of the build. Update at the end of every session.
 
 ## Backlog (post-MVP)
 
-- [ ] Cloud backup (user-owned Google Drive)
+- [x] Cloud backup — Android Auto Backup to user's Google Drive (manifest + XML rules)
 - [ ] Charting per exercise
 - [ ] Rest timers (local notifications)
 - [ ] AI features (user-supplied Anthropic API key)
