@@ -1,0 +1,28 @@
+name: PR Preview Build
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-distribute:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install devbox
+        uses: jetify-com/devbox-install-action@v0.13.7
+        with:
+          enable-cache: true
+
+      - name: Build debug APK
+        run: devbox run -- ./gradlew assembleDebug
+
+      - name: Upload to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          groups: Preview
+          file: app/build/outputs/apk/debug/app-debug.apk
+          releaseNotes: "PR #${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}"

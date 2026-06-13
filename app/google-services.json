@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "649790058498",
+    "project_id": "reps-e116c",
+    "storage_bucket": "reps-e116c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:649790058498:android:ad9cf58161f1fc7593771b",
+        "android_client_info": {
+          "package_name": "com.tvandinther.reps"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2CiZgsZ9wELrlzqzOVuoTLjoIedO3miY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
