@@ -76,6 +76,7 @@ fun ChartScreen(
             DotPlot(
                 points = uiState.points,
                 isSingleAxis = uiState.isSingleAxis,
+                maxSetCount = uiState.setCount,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(top = 24.dp, bottom = 16.dp, start = 8.dp, end = 16.dp),
@@ -123,9 +124,10 @@ private fun ChartHeader(
 
             val axisDesc = buildString {
                 if (!isSingleAxis) {
-                    if (volumeUnitLabel.isNotEmpty()) append(volumeUnitLabel.uppercase())
-                    append(" → / ")
+                    // 2-axis: resistance on X (→), volume on Y (↑)
                     if (resistanceUnitLabel.isNotEmpty()) append(resistanceUnitLabel.uppercase())
+                    append(" → / ")
+                    if (volumeUnitLabel.isNotEmpty()) append(volumeUnitLabel.uppercase())
                     append(" ↑")
                 } else {
                     if (volumeUnitLabel.isNotEmpty()) append(volumeUnitLabel.uppercase())
@@ -164,6 +166,7 @@ private fun ChartHeader(
 private fun DotPlot(
     points: List<ChartDataPoint>,
     isSingleAxis: Boolean,
+    maxSetCount: Int,
     modifier: Modifier = Modifier,
 ) {
     val textMeasurer = rememberTextMeasurer()
@@ -179,7 +182,7 @@ private fun DotPlot(
         val n = points.size
         if (n == 0) return@Canvas
 
-        // Axis layout margins
+        // Layout margins
         val yAxisPad = if (isSingleAxis) 0f else 48.dp.toPx()
         val xAxisPad = 28.dp.toPx()
         val topPad = if (isSingleAxis) size.height * 0.35f else 8.dp.toPx()
@@ -193,93 +196,82 @@ private fun DotPlot(
 
         if (chartWidth <= 0f || chartHeight <= 0f) return@Canvas
 
-        // Volume range with edge padding so dots don't sit on the axis lines
+        // 2-axis: resistance on X, volume on Y
+        // 1-axis: volume on X, dots fixed at vertical centre
         val volumes = points.map { it.volumeValue }
-        val minVol = volumes.min()
-        val maxVol = volumes.max()
-        val volSpan = if (maxVol - minVol < 1e-9) 1.0 else maxVol - minVol
-        val volPad = volSpan * 0.08
-        val volLo = minVol - volPad
-        val volHi = maxVol + volPad
-
-        // Resistance range
         val resistances = if (!isSingleAxis) points.mapNotNull { it.resistanceValue } else emptyList()
-        val minRes = resistances.minOrNull() ?: 0.0
-        val maxRes = resistances.maxOrNull() ?: 0.0
-        val resSpan = if (maxRes - minRes < 1e-9) 1.0 else maxRes - minRes
-        val resPad = resSpan * 0.08
-        val resLo = minRes - resPad
-        val resHi = maxRes + resPad
+
+        val xSeries = if (isSingleAxis) volumes else resistances
+        val xMin = if (xSeries.isEmpty()) 0.0 else xSeries.min()
+        val xMax = if (xSeries.isEmpty()) 1.0 else xSeries.max()
+        val xSpan = if (xMax - xMin < 1e-9) 1.0 else xMax - xMin
+        val xLo = xMin - xSpan * 0.10  // 10% padding keeps dots off the axis edges
+        val xHi = xMax + xSpan * 0.10
+
+        val yMin = volumes.min()
+        val yMax = volumes.max()
+        val ySpan = if (yMax - yMin < 1e-9) 1.0 else yMax - yMin
+        val yLo = yMin - ySpan * 0.10
+        val yHi = yMax + ySpan * 0.10
+
+        // Coordinate helpers — data value → canvas pixel, aligned with the padded range
+        val xPx: (Double) -> Float = { v -> chartLeft + ((v - xLo) / (xHi - xLo)).toFloat() * chartWidth }
+        val yPx: (Double) -> Float = { v -> chartBottom - ((v - yLo) / (yHi - yLo)).toFloat() * chartHeight }
 
         val axisColor = Color(0xFF282828)
+        val tickColor = Color(0xFF444444)
+        val tickLen = 5.dp.toPx()
+        val labelGap = 6.dp.toPx()
 
         // X axis line
-        drawLine(
-            color = axisColor,
-            start = Offset(chartLeft, chartBottom),
-            end = Offset(chartRight, chartBottom),
-            strokeWidth = 1.dp.toPx(),
-        )
+        drawLine(color = axisColor, start = Offset(chartLeft, chartBottom), end = Offset(chartRight, chartBottom), strokeWidth = 1.dp.toPx())
 
         // Y axis line (2-axis only)
         if (!isSingleAxis) {
-            drawLine(
-                color = axisColor,
-                start = Offset(chartLeft, chartTop),
-                end = Offset(chartLeft, chartBottom),
-                strokeWidth = 1.dp.toPx(),
-            )
+            drawLine(color = axisColor, start = Offset(chartLeft, chartTop), end = Offset(chartLeft, chartBottom), strokeWidth = 1.dp.toPx())
         }
 
-        // X axis value labels
-        val minVolLabel = textMeasurer.measure(formatChartValue(minVol), labelStyle)
-        val maxVolLabel = textMeasurer.measure(formatChartValue(maxVol), labelStyle)
-        val labelY = chartBottom + 6.dp.toPx()
-        drawText(minVolLabel, topLeft = Offset(chartLeft, labelY))
-        drawText(maxVolLabel, topLeft = Offset(chartRight - maxVolLabel.size.width, labelY))
+        // X axis: tick + label centred on the data value's canvas position
+        val xMinPx = xPx(xMin)
+        val xMaxPx = xPx(xMax)
+        val xLabelY = chartBottom + labelGap
+        drawLine(color = tickColor, start = Offset(xMinPx, chartBottom), end = Offset(xMinPx, chartBottom + tickLen), strokeWidth = 1.dp.toPx())
+        drawLine(color = tickColor, start = Offset(xMaxPx, chartBottom), end = Offset(xMaxPx, chartBottom + tickLen), strokeWidth = 1.dp.toPx())
+        val minXLabel = textMeasurer.measure(formatChartValue(xMin), labelStyle)
+        val maxXLabel = textMeasurer.measure(formatChartValue(xMax), labelStyle)
+        drawText(minXLabel, topLeft = Offset(xMinPx - minXLabel.size.width / 2f, xLabelY))
+        drawText(maxXLabel, topLeft = Offset(xMaxPx - maxXLabel.size.width / 2f, xLabelY))
 
-        // Y axis value labels (2-axis only)
+        // Y axis: tick + label right-aligned to the data value's canvas position (2-axis only)
         if (!isSingleAxis) {
-            val minResLabel = textMeasurer.measure(formatChartValue(minRes), labelStyle)
-            val maxResLabel = textMeasurer.measure(formatChartValue(maxRes), labelStyle)
-            drawText(
-                minResLabel,
-                topLeft = Offset(
-                    chartLeft - minResLabel.size.width - 6.dp.toPx(),
-                    chartBottom - minResLabel.size.height / 2,
-                ),
-            )
-            drawText(
-                maxResLabel,
-                topLeft = Offset(
-                    chartLeft - maxResLabel.size.width - 6.dp.toPx(),
-                    chartTop - maxResLabel.size.height / 2,
-                ),
-            )
+            val yMinPx = yPx(yMin)
+            val yMaxPx = yPx(yMax)
+            drawLine(color = tickColor, start = Offset(chartLeft, yMinPx), end = Offset(chartLeft - tickLen, yMinPx), strokeWidth = 1.dp.toPx())
+            drawLine(color = tickColor, start = Offset(chartLeft, yMaxPx), end = Offset(chartLeft - tickLen, yMaxPx), strokeWidth = 1.dp.toPx())
+            val minYLabel = textMeasurer.measure(formatChartValue(yMin), labelStyle)
+            val maxYLabel = textMeasurer.measure(formatChartValue(yMax), labelStyle)
+            drawText(minYLabel, topLeft = Offset(chartLeft - minYLabel.size.width - tickLen - labelGap, yMinPx - minYLabel.size.height / 2f))
+            drawText(maxYLabel, topLeft = Offset(chartLeft - maxYLabel.size.width - tickLen - labelGap, yMaxPx - maxYLabel.size.height / 2f))
         }
 
-        // Dot size constants (in px)
+        // Dot constants
         val basePx = 5.dp.toPx()
         val peakPx = 8.dp.toPx()
 
-        // Draw dots oldest (index 0) to newest (index n-1) so newest renders on top
+        // Draw dots oldest (index 0) to newest (index n-1) so newest renders on top.
+        // t is anchored to the END of the gradient: newest is always t=1.0 (orange).
+        // Older dots are placed proportionally back from there based on maxSetCount,
+        // so a small number of recent sets all appear near the orange end.
         points.forEachIndexed { index, point ->
-            val t = if (n <= 1) 1f else index.toFloat() / (n - 1).toFloat()
-            val color = dotColor(t)
-
-            // Size gradient: only the most recent ~12% grow larger; cut off sharply
-            val radiusPx = if (t >= 0.88f) {
-                basePx + (peakPx - basePx) * ((t - 0.88f) / 0.12f)
-            } else basePx
-
-            val cx = chartLeft + ((point.volumeValue - volLo) / (volHi - volLo)).toFloat() * chartWidth
-            val cy = if (isSingleAxis) {
-                chartTop + chartHeight * 0.5f
-            } else {
-                val res = point.resistanceValue ?: minRes
-                // Higher resistance = higher on canvas = lower Y
-                chartBottom - ((res - resLo) / (resHi - resLo)).toFloat() * chartHeight
+            val t = if (maxSetCount <= 1) 1f else {
+                ((maxSetCount - n + index).toFloat() / (maxSetCount - 1).toFloat()).coerceIn(0f, 1f)
             }
+            val color = dotColor(t)
+            val radiusPx = if (t >= 0.88f) basePx + (peakPx - basePx) * ((t - 0.88f) / 0.12f) else basePx
+
+            val xVal = if (isSingleAxis) point.volumeValue else (point.resistanceValue ?: xMin)
+            val cx = xPx(xVal)
+            val cy = if (isSingleAxis) chartTop + chartHeight * 0.5f else yPx(point.volumeValue)
 
             drawCircle(color = color, radius = radiusPx, center = Offset(cx, cy))
         }
