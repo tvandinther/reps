@@ -20,7 +20,19 @@ android {
         vectorDrawables { useSupportLibrary = true }
     }
 
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file(System.getenv("DEBUG_KEYSTORE_PATH") ?: "${System.getProperty("user.home")}/.android/debug.keystore")
+            storePassword = System.getenv("DEBUG_KEYSTORE_PASSWORD") ?: "android"
+            keyAlias = System.getenv("DEBUG_KEY_ALIAS") ?: "androiddebugkey"
+            keyPassword = System.getenv("DEBUG_KEY_PASSWORD") ?: "android"
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("debug")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(

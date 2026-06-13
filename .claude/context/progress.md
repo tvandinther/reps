@@ -36,6 +36,10 @@ Current state of the build. Update at the end of every session.
 - [ ] Install APK on device and smoke test all screens and flows
 - [ ] Design system pass once aesthetic direction is confirmed
 
+## Done (post-MVP additions)
+
+- [x] **Phase 8 (2026-06-13):** Exercise progress chart — dot plot accessible from the logging screen header via "CHART →" button. Canvas-drawn scatter plot (2-axis: volume × resistance) or strip chart (1-axis: bodyweight/none exercises). Color gradient from dark grey (oldest) to orange (newest), size gradient for most recent dots. Configurable set count (10–200) added to Settings.
+
 ## Backlog (post-MVP)
 
 - [x] Cloud backup — Android Auto Backup to user's Google Drive (manifest + XML rules)
@@ -43,5 +47,4 @@ Current state of the build. Update at the end of every session.
 - [ ] Rest timers (local notifications)
 - [ ] AI features (user-supplied Anthropic API key)
 - [ ] Templates and programming
-- [ ] Settings screen (gap threshold, default units)
 - [ ] Google Fit integration

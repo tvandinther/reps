@@ -85,6 +85,7 @@ fun LoggingScreen(
     exerciseId: Long,
     onBack: () -> Unit,
     onEditExercise: () -> Unit = {},
+    onChart: () -> Unit = {},
     viewModel: LoggingViewModel = koinViewModel(parameters = { parametersOf(exerciseId) }),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -109,6 +110,7 @@ fun LoggingScreen(
                 resistanceUnitLabel = uiState.resistanceUnit?.label ?: "",
                 onBack = onBack,
                 onLongClickTitle = onEditExercise,
+                onChart = onChart,
             )
 
             LazyColumn(
@@ -310,8 +312,15 @@ private fun LoggingHeader(
     resistanceUnitLabel: String,
     onBack: () -> Unit,
     onLongClickTitle: () -> Unit,
+    onChart: () -> Unit,
 ) {
     var noteExpanded by remember { mutableStateOf(false) }
+
+    val navLinkStyle = StyleH3.copy(
+        color = ColorSignal,
+        fontSize = 11.sp,
+        letterSpacing = 3.3.sp,
+    )
 
     Column(
         modifier = Modifier
@@ -319,18 +328,25 @@ private fun LoggingHeader(
             .background(ColorSurfaceDeep)
             .padding(top = 16.dp),
     ) {
-        // Back link
-        Text(
-            text = "← EXERCISES",
-            style = StyleH3.copy(
-                color = ColorSignal,
-                fontSize = 11.sp,
-                letterSpacing = 3.3.sp,   // 0.3 em × 11 sp
-            ),
+        // Back link row with chart button
+        androidx.compose.foundation.layout.Row(
             modifier = Modifier
-                .padding(horizontal = 18.dp)
-                .combinedClickable(onClick = onBack),
-        )
+                .fillMaxWidth()
+                .padding(horizontal = 18.dp),
+            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "← EXERCISES",
+                style = navLinkStyle,
+                modifier = Modifier.combinedClickable(onClick = onBack),
+            )
+            Spacer(Modifier.weight(1f))
+            Text(
+                text = "CHART →",
+                style = navLinkStyle,
+                modifier = Modifier.combinedClickable(onClick = onChart),
+            )
+        }
 
         Spacer(Modifier.height(8.dp))
 

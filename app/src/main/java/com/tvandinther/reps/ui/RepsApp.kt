@@ -31,6 +31,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.tvandinther.reps.ui.chart.ChartScreen
 import com.tvandinther.reps.ui.exercises.EditExerciseScreen
 import com.tvandinther.reps.ui.exercises.ExercisesScreen
 import com.tvandinther.reps.ui.history.HistoryScreen
@@ -48,6 +49,7 @@ import kotlinx.serialization.Serializable
 @Serializable object ExercisesList
 @Serializable data class SetLogging(val exerciseId: Long)
 @Serializable data class ExerciseEdit(val exerciseId: Long)
+@Serializable data class ExerciseChart(val exerciseId: Long)
 @Serializable object HistoryTab
 @Serializable object SettingsTab
 
@@ -120,6 +122,14 @@ fun RepsApp() {
                             exerciseId = route.exerciseId,
                             onBack = { navController.popBackStack() },
                             onEditExercise = { navController.navigate(ExerciseEdit(route.exerciseId)) },
+                            onChart = { navController.navigate(ExerciseChart(route.exerciseId)) },
+                        )
+                    }
+                    composable<ExerciseChart> { backStackEntry ->
+                        val route: ExerciseChart = backStackEntry.toRoute()
+                        ChartScreen(
+                            exerciseId = route.exerciseId,
+                            onBack = { navController.popBackStack() },
                         )
                     }
                 }

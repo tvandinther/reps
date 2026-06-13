@@ -28,6 +28,9 @@ interface SetDao {
     @Query("SELECT MAX(logged_at) FROM sets WHERE exercise_id = :exerciseId")
     suspend fun getLatestLoggedAt(exerciseId: Long): Long?
 
+    @Query("SELECT * FROM sets WHERE exercise_id = :exerciseId ORDER BY logged_at DESC LIMIT :limit")
+    fun getRecentForExercise(exerciseId: Long, limit: Int): Flow<List<SetEntity>>
+
     @Update
     suspend fun update(set: SetEntity)
 }

@@ -18,10 +18,18 @@ jobs:
       - name: Configure SDK path
         run: devbox run -- sh -c 'echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties'
 
+      - name: Decode keystore
+        run: |
+          echo "${{ secrets.DEBUG_KEYSTORE }}" | base64 -d > app/debug.keystore
+
       - name: Build debug APK
         run: devbox run -- ./gradlew assembleDebug
         env:
           VERSION_CODE: ${{ github.run_number }}
+          DEBUG_KEYSTORE_PATH: ${{ github.workspace }}/app/debug.keystore
+          DEBUG_KEYSTORE_PASSWORD: ${{ secrets.DEBUG_KEYSTORE_PASSWORD }}
+          DEBUG_KEY_ALIAS: ${{ secrets.DEBUG_KEY_ALIAS }}
+          DEBUG_KEY_PASSWORD: ${{ secrets.DEBUG_KEY_PASSWORD }}
 
       - name: Upload to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1

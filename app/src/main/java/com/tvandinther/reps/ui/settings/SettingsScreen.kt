@@ -121,6 +121,76 @@ fun SettingsScreen(
 
         Spacer(Modifier.height(24.dp))
 
+        // ── Chart set count ─────────────────────────────────────────────────
+        SectionHeader("Chart")
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 18.dp, vertical = 11.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "SETS IN CHART",
+                style = StyleH3,
+                color = ColorInk3,
+                modifier = Modifier.weight(1f),
+            )
+            Text(
+                text = "${uiState.chartSetCount}",
+                style = StyleH3,
+                color = ColorInk,
+            )
+        }
+
+        Slider(
+            value = ((uiState.chartSetCount / 10) - 1).toFloat(),
+            onValueChange = { sliderValue ->
+                val count = ((sliderValue.roundToInt() + 1) * 10).coerceIn(10, 200)
+                viewModel.setChartSetCount(count)
+            },
+            valueRange = 0f..19f,
+            steps = 18,
+            colors = SliderDefaults.colors(
+                thumbColor = ColorSignal,
+                activeTrackColor = ColorSignal,
+                inactiveTrackColor = ColorDivider,
+                activeTickColor = Color.Transparent,
+                inactiveTickColor = Color.Transparent,
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 18.dp),
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 18.dp),
+        ) {
+            Text(
+                text = "10",
+                style = StyleBody,
+                color = ColorInk4,
+            )
+            Spacer(Modifier.weight(1f))
+            Text(
+                text = "200",
+                style = StyleBody,
+                color = ColorInk4,
+            )
+        }
+
+        Spacer(Modifier.height(4.dp))
+        Text(
+            text = "Number of recent sets shown in the exercise progress chart.",
+            style = StyleBody,
+            color = ColorInk4,
+            modifier = Modifier.padding(horizontal = 18.dp),
+        )
+
+        Spacer(Modifier.height(24.dp))
+
         // ── Left-handed mode ────────────────────────────────────────────────
         SectionHeader("Ergonomics")
 
