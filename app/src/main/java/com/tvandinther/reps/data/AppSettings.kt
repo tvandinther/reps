@@ -17,8 +17,10 @@ class AppSettings(private val context: Context) {
     companion object {
         private val KEY_SESSION_GAP_MINUTES = intPreferencesKey("session_gap_minutes")
         private val KEY_LEFT_HANDED = booleanPreferencesKey("left_handed")
+        private val KEY_CHART_SET_COUNT = intPreferencesKey("chart_set_count")
 
         const val DEFAULT_SESSION_GAP_MINUTES = 90
+        const val DEFAULT_CHART_SET_COUNT = 100
     }
 
     val sessionGapMinutes: Flow<Int> = context.dataStore.data.map { prefs ->
@@ -27,6 +29,10 @@ class AppSettings(private val context: Context) {
 
     val isLeftHanded: Flow<Boolean> = context.dataStore.data.map { prefs ->
         prefs[KEY_LEFT_HANDED] ?: false
+    }
+
+    val chartSetCount: Flow<Int> = context.dataStore.data.map { prefs ->
+        prefs[KEY_CHART_SET_COUNT] ?: DEFAULT_CHART_SET_COUNT
     }
 
     suspend fun setSessionGapMinutes(minutes: Int) {
@@ -38,6 +44,12 @@ class AppSettings(private val context: Context) {
     suspend fun setLeftHanded(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[KEY_LEFT_HANDED] = enabled
+        }
+    }
+
+    suspend fun setChartSetCount(count: Int) {
+        context.dataStore.edit { prefs ->
+            prefs[KEY_CHART_SET_COUNT] = count
         }
     }
 }

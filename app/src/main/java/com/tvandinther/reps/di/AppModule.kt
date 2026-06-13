@@ -3,6 +3,7 @@ package com.tvandinther.reps.di
 import com.tvandinther.reps.data.AppSettings
 import com.tvandinther.reps.data.db.AppDatabase
 import com.tvandinther.reps.domain.SessionAssembler
+import com.tvandinther.reps.ui.chart.ChartViewModel
 import com.tvandinther.reps.ui.exercises.EditExerciseViewModel
 import com.tvandinther.reps.ui.exercises.ExercisesViewModel
 import com.tvandinther.reps.ui.history.HistoryViewModel
@@ -23,6 +24,7 @@ val appModule = module {
     viewModel { ExercisesViewModel(get(), get(), get()) }
     viewModel { params -> EditExerciseViewModel(params.get(), get(), get(), get()) }
     viewModel { params -> LoggingViewModel(params.get(), get(), get(), get(), get()) }
+    viewModel { params -> ChartViewModel(params.get(), get(), get(), get(), get()) }
     viewModel { HistoryViewModel(get(), get(), get()) }
     viewModel { SettingsViewModel(get()) }
 }

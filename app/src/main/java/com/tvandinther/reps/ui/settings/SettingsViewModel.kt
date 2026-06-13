@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 data class SettingsUiState(
     val sessionGapMinutes: Int = AppSettings.DEFAULT_SESSION_GAP_MINUTES,
     val isLeftHanded: Boolean = false,
+    val chartSetCount: Int = AppSettings.DEFAULT_CHART_SET_COUNT,
 )
 
 class SettingsViewModel(
@@ -21,10 +22,12 @@ class SettingsViewModel(
     val uiState: StateFlow<SettingsUiState> = combine(
         appSettings.sessionGapMinutes,
         appSettings.isLeftHanded,
-    ) { gap, leftHanded ->
+        appSettings.chartSetCount,
+    ) { gap, leftHanded, chartCount ->
         SettingsUiState(
             sessionGapMinutes = gap,
             isLeftHanded = leftHanded,
+            chartSetCount = chartCount,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), SettingsUiState())
 
@@ -34,5 +37,9 @@ class SettingsViewModel(
 
     fun setLeftHanded(enabled: Boolean) {
         viewModelScope.launch { appSettings.setLeftHanded(enabled) }
+    }
+
+    fun setChartSetCount(count: Int) {
+        viewModelScope.launch { appSettings.setChartSetCount(count) }
     }
 }

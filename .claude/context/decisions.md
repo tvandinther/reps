@@ -49,3 +49,19 @@ Architectural and design decisions with rationale. Most recent first.
 **Date:** project start  
 **Decision:** Minimum supported Android API is 30 (Android 11).  
 **Rationale:** The session clustering query uses `LAG()` window functions, which require SQLite 3.25+. This ships with API 30. Going lower would require a bundled SQLite or a different clustering approach — not worth the complexity.
+
+---
+
+## Exercise progress chart — Canvas dot plot, no charting library
+
+**Date:** 2026-06-13  
+**Decision:** Chart is implemented as a custom Compose Canvas draw call with no third-party charting library.  
+**Rationale:** The design is intentionally minimal and brutalist. A library would impose visual conventions that conflict with the app's aesthetic. Canvas gives full control over dot placement, color, and size gradients with very little code. The chart is a dot/scatter plot only — no lines, no bars, no tooltips.
+
+---
+
+## Chart color gradient — grey-to-orange, saturation reserved for newest sets
+
+**Date:** 2026-06-13  
+**Decision:** Oldest ~50% of sets render as dark-to-medium grey, next ~35% as medium-to-light grey, most recent ~15% transition to full ColorSignal orange. Dot size increases only in the last ~12% of sets.  
+**Rationale:** Keeps visual noise low for historical data while making progress immediately legible. The orange "hot zone" at the right/top of the chart is the user's current performance level.
