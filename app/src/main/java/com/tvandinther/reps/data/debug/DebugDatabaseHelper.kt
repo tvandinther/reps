@@ -10,7 +10,7 @@ import java.io.File
 object DebugDatabaseHelper {
 
     fun exportDatabase(context: Context, database: AppDatabase, uri: Uri) {
-        database.openHelper.readableDatabase.rawQuery("PRAGMA wal_checkpoint(FULL)", null).close()
+        database.openHelper.readableDatabase.query("PRAGMA wal_checkpoint(FULL)", null).close()
         val dbFile = context.getDatabasePath("reps.db")
         context.contentResolver.openOutputStream(uri)?.use { output ->
             dbFile.inputStream().use { input -> input.copyTo(output) }
