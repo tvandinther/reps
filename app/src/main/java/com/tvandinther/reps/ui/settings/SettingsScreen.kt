@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
@@ -27,7 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import kotlin.math.roundToInt
+import com.tvandinther.reps.BuildConfig
 import com.tvandinther.reps.ui.theme.ColorDivider
 import com.tvandinther.reps.ui.theme.ColorInk
 import com.tvandinther.reps.ui.theme.ColorInk3
@@ -37,8 +39,8 @@ import com.tvandinther.reps.ui.theme.ColorSignal
 import com.tvandinther.reps.ui.theme.StyleBody
 import com.tvandinther.reps.ui.theme.StyleEyebrow
 import com.tvandinther.reps.ui.theme.StyleH3
-import org.koin.androidx.compose.koinViewModel
 import kotlin.math.roundToInt
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SettingsScreen(
@@ -49,6 +51,7 @@ fun SettingsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(top = 16.dp),
     ) {
         // ── Session gap ─────────────────────────────────────────────────────
@@ -218,6 +221,11 @@ fun SettingsScreen(
                 checked = uiState.isLeftHanded,
                 onCheckedChange = { viewModel.setLeftHanded(it) },
             )
+        }
+
+        if (BuildConfig.DEBUG) {
+            Spacer(Modifier.height(24.dp))
+            DebugSection()
         }
     }
 }
